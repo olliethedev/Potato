@@ -1,0 +1,17 @@
+apply plugin: 'java'
+apply plugin: 'bintray-release'
+
+// NO Java 8 !!!
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
+
+publish {
+    artifactId = 'savage_potato_api'
+    userOrg = rootProject.userOrg
+    groupId = rootProject.groupId
+    uploadName = rootProject.uploadName
+    publishVersion = rootProject.publishVersion
+    description = rootProject.description
+    website = rootProject.website
+    licences = rootProject.licences
+}

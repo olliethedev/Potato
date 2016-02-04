@@ -1,0 +1,26 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.5.0'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
+        classpath 'com.novoda:bintray-release:0.2.10'
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+    }
+}
+
+ext {
+    userOrg = 'savage'
+    groupId = 'com.savage'
+    uploadName = 'Android-potato'
+    description = 'Annotation processing to help with automatic java object generation from endpoint definition'
+    publishVersion = '0.0.1'
+    website = 'https://github.com/OleksiyMartynov/Potato'
+    licences = ['MIT']
+}
