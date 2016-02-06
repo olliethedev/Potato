@@ -6,8 +6,10 @@ import com.savage.potato.compiler.plugin.BasePlugIn;
 import com.savage.potato.compiler.plugin.ProcessorLogger;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -29,6 +31,7 @@ public class PotatoProcessor extends AbstractProcessor implements ProcessorLogge
     private Elements elementUtils;
     private Filer filer;
     private List<BasePlugIn> plugIns = new ArrayList<>();
+    private Map<BasePlugIn, Set<String>> plugInAnnotationMap = new HashMap<>();
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -38,7 +41,6 @@ public class PotatoProcessor extends AbstractProcessor implements ProcessorLogge
         elementUtils = processingEnv.getElementUtils();
         filer = processingEnv.getFiler();
 
-        //Add processor plug-ins
         add(AccessorPlugIn.class);
     }
 
@@ -46,7 +48,7 @@ public class PotatoProcessor extends AbstractProcessor implements ProcessorLogge
         try {
             plugIns.add(clazz.getConstructor(ProcessorLogger.class, Types.class, Elements.class, Filer.class).newInstance(this, typeUtils, elementUtils, filer));
         } catch (Exception e) {
-            log(this, Diagnostic.Kind.ERROR, "Could not instantiate " + clazz.getSimpleName());
+            log(this, Diagnostic.Kind.ERROR, String.format("Could not instantiate %1s due to %2s", clazz.getSimpleName(), e.getMessage()));
         }
     }
 
@@ -54,11 +56,18 @@ public class PotatoProcessor extends AbstractProcessor implements ProcessorLogge
     public Set getSupportedAnnotationTypes() {
         Set<String> annotations = new LinkedHashSet<String>();
         for (BasePlugIn plugIn : plugIns) {
-            try {
-                annotations.addAll(plugIn.getSupportedAnnotationTypes());
-            } catch (Exception e) {
-                log(this, Diagnostic.Kind.ERROR, "Could not add all annotations from " + plugIn.getClass().getSimpleName() + " due to " + e.getMessage());
+            Set<String> supportedAnnotations = plugIn.getSupportedAnnotationTypes();
+            for (String annotationName : supportedAnnotations) {
+                log(Diagnostic.Kind.NOTE, String.format("Registering annotation %1s for %2s", annotationName, plugIn.getClass().getSimpleName()));
+                try {
+                    if (!annotations.add(annotationName)) {
+                        log(Diagnostic.Kind.ERROR, String.format("Could not register annotation:%1s from plug-in:%s2 because its used by another plugin.", annotationName, plugIn.getClass().getSimpleName()));
+                    }
+                } catch (Exception e) {
+                    log(Diagnostic.Kind.ERROR, String.format("Could not register annotation:%1s from plug-in:%2s due to %3s", annotationName, plugIn.getClass().getSimpleName(), e.getMessage()));
+                }
             }
+            plugInAnnotationMap.put(plugIn, annotations);
         }
         return annotations;
     }
@@ -71,7 +80,11 @@ public class PotatoProcessor extends AbstractProcessor implements ProcessorLogge
     @Override
     public boolean process(Set annotations, RoundEnvironment roundEnv) {
         for (BasePlugIn plugIn : plugIns) {
-            plugIn.process(annotations, roundEnv);
+            try {
+                plugIn.process(plugInAnnotationMap.get(plugIn), roundEnv);
+            } catch (Exception e) {
+                log(Diagnostic.Kind.ERROR, String.format("Plug-in %1s failed to process annotations", plugIn.getClass().getSimpleName()));
+            }
         }
         return true;
     }
@@ -79,5 +92,9 @@ public class PotatoProcessor extends AbstractProcessor implements ProcessorLogge
     @Override
     public void log(Object caller, Diagnostic.Kind kind, String msg) {
         messager.printMessage(kind, String.format("Plug-In:%1s \nSays:%2s", caller.getClass().getSimpleName(), msg));
+    }
+
+    private void log(Diagnostic.Kind kind, String msg) {
+        messager.printMessage(kind, String.format("%1s:\n%2s", getClass().getSimpleName(), msg));
     }
 }
