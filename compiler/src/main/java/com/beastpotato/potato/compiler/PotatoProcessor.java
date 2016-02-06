@@ -1,9 +1,9 @@
-package com.savage.potato.compiler;
+package com.beastpotato.potato.compiler;
 
+import com.beastpotato.potato.compiler.plugin.AccessorPlugIn;
+import com.beastpotato.potato.compiler.plugin.BasePlugIn;
+import com.beastpotato.potato.compiler.plugin.ProcessorLogger;
 import com.google.auto.service.AutoService;
-import com.savage.potato.compiler.plugin.AccessorPlugIn;
-import com.savage.potato.compiler.plugin.BasePlugIn;
-import com.savage.potato.compiler.plugin.ProcessorLogger;
 
 import java.util.ArrayList;
 import java.util.HashMap;

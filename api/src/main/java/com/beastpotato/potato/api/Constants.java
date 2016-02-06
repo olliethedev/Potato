@@ -1,4 +1,4 @@
-package com.savage.potato.api;
+package com.beastpotato.potato.api;
 
 /**
  * Created by Oleksiy on 2/6/2016.

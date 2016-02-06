@@ -1,6 +1,6 @@
-package com.savage.potato.compiler.plugin;
+package com.beastpotato.potato.compiler.plugin;
 
-import com.savage.potato.api.Accessor;
+import com.beastpotato.potato.api.Accessor;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
@@ -64,7 +64,7 @@ public class AccessorPlugIn extends BasePlugIn {
 
 
                 try {
-                    JavaFile.builder("com.savage.potato.example", accessorClass).build().writeTo(getFiler());
+                    JavaFile.builder("com.beastpotato.potato.example", accessorClass).build().writeTo(getFiler());
                 } catch (IOException e) {
                     log(Diagnostic.Kind.ERROR, e.toString());
                 }

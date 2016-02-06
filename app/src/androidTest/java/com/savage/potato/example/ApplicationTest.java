@@ -1,4 +1,4 @@
-package com.savage.potato.example;
+package com.beastpotato.potato.example;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

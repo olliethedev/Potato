@@ -1,4 +1,4 @@
-package com.savage.potato.api;
+package com.beastpotato.potato.api;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

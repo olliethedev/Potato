@@ -1,4 +1,4 @@
-package com.savage.potato.compiler.plugin;
+package com.beastpotato.potato.compiler.plugin;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
