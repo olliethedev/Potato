@@ -12,7 +12,7 @@ public class ExampleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_example);
         Log.i("ExampleActivity", "Hello");
-        SimpleStringAssessor sup = new SimpleStringAssessor(); //generated based on @Assessor annotation in SimpleObject.java
+        SimpleStringAccessor sup = new SimpleStringAccessor(); //generated based on @Assessor annotation in SimpleObject.java
         Toast.makeText(this, sup.getSimpleString(), Toast.LENGTH_LONG).show();
     }
 }

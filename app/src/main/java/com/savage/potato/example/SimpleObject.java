@@ -7,5 +7,5 @@ import com.savage.potato.api.Accessor;
  */
 public class SimpleObject {
     @Accessor
-    public static String simpleString = "swag17";
+    public static String simpleString = "swag18";
 }
