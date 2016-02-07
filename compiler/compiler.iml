@@ -35,7 +35,6 @@
     <orderEntry type="library" exported="" name="auto-common-0.3" level="project" />
     <orderEntry type="library" exported="" name="guava-18.0" level="project" />
     <orderEntry type="library" exported="" name="jsonschema2pojo-core-0.4.19" level="project" />
-    <orderEntry type="library" exported="" name="C__Users_Admin_Documents_Programming_StudioProjects_Potato_compiler_libs_volley_jar" level="project" />
     <orderEntry type="library" exported="" name="compiler.compiler" level="project" />
   </component>
 </module>
