@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module external.linked.project.id=":compiler" external.linked.project.path="$MODULE_DIR$" external.root.project.path="$MODULE_DIR$/.." external.system.id="GRADLE" external.system.module.group="potato" external.system.module.version="unspecified" type="JAVA_MODULE" version="4">
+<module external.linked.project.id=":compiler" external.linked.project.path="$MODULE_DIR$" external.root.project.path="$MODULE_DIR$/.." external.system.id="GRADLE" external.system.module.group="Potato" external.system.module.version="unspecified" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="android-gradle" name="Android-Gradle">
       <configuration>
@@ -30,9 +30,12 @@
     <orderEntry type="module" module-name="api" exported="" />
     <orderEntry type="library" exported="" name="auto-service-1.0-rc2" level="project" />
     <orderEntry type="library" exported="" name="javapoet-1.0.0" level="project" />
+    <orderEntry type="library" exported="" name="library-1.0.19" level="project" />
+    <orderEntry type="library" exported="" name="gson-2.5" level="project" />
     <orderEntry type="library" exported="" name="auto-common-0.3" level="project" />
     <orderEntry type="library" exported="" name="guava-18.0" level="project" />
     <orderEntry type="library" exported="" name="jsonschema2pojo-core-0.4.19" level="project" />
+    <orderEntry type="library" exported="" name="C__Users_Admin_Documents_Programming_StudioProjects_Potato_compiler_libs_volley_jar" level="project" />
     <orderEntry type="library" exported="" name="compiler.compiler" level="project" />
   </component>
 </module>
