@@ -85,7 +85,7 @@ public class RequestModelGenerator extends BaseGenerator<RequestModel> {
     @Override
     public RequestModel generate() throws GenerationException {
         try {
-            RequestModel requestModel = new RequestModel(classElement.getSimpleName().toString());
+            RequestModel requestModel = new RequestModel(classElement);
             log(Diagnostic.Kind.NOTE, String.format("Generating classElement"));
             parseTypeElementInto(classElement, requestModel);
             log(Diagnostic.Kind.NOTE, String.format("Generating urlPathParams"));

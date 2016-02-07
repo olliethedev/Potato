@@ -3,17 +3,20 @@ package com.beastpotato.potato.compiler.models;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
 /**
  * Created by Oleksiy on 2/6/2016.
  */
 public class RequestModel {
+    private TypeElement typeElement;
     private List<RequestModelFieldDef> fields;
     private String modelName;
 
-    public RequestModel(String modelName) {
-        this.modelName = modelName;
+    public RequestModel(TypeElement typeElement) {
+        this.modelName = typeElement.getSimpleName().toString();
+        this.typeElement = typeElement;
         fields = new ArrayList<>();
     }
 
@@ -23,6 +26,10 @@ public class RequestModel {
 
     public List<RequestModelFieldDef> getFields() {
         return fields;
+    }
+
+    public TypeElement getTypeElement() {
+        return typeElement;
     }
 
     public String getModelName() {

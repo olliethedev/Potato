@@ -15,6 +15,7 @@ import com.squareup.javapoet.TypeSpec;
 
 import java.io.IOException;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.processing.Filer;
@@ -61,9 +62,12 @@ public class EndpointPlugIn extends BasePlugIn {
                     log(Diagnostic.Kind.NOTE, "generating model...");
                     RequestModel model = requestModelGenerator.generate();
                     log(Diagnostic.Kind.NOTE, "model generated...");
-                    RequestModelConverter modelConverter = new RequestModelConverter();
-                    TypeSpec ts = modelConverter.convert(model);
-                    JavaFile.builder(getElementUtils().getPackageOf(te).toString(), ts).build().writeTo(getFiler());
+                    RequestModelConverter modelConverter = new RequestModelConverter(getLogger(), getTypeUtils(), getElementUtils());
+                    List<TypeSpec> typeSpecList = modelConverter.convert(model);
+                    typeSpecList.add(RequestModelConverter.getRequestSuperClass());//must be generated once or Filer will throw
+                    for (TypeSpec typeSpec : typeSpecList) {
+                        JavaFile.builder(getElementUtils().getPackageOf(te).toString(), typeSpec).build().writeTo(getFiler());
+                    }
                 } catch (BaseGenerator.InitializationException e) {
                     log(Diagnostic.Kind.ERROR, String.format("Failed to initialize %1s due to %2s", RequestModelGenerator.class.getSimpleName(), e.getMessage()));
                 } catch (BaseGenerator.GenerationException e) {
