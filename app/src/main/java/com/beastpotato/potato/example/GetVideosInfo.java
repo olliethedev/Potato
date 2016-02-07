@@ -10,7 +10,7 @@ import com.beastpotato.potato.api.UrlPathParam;
 /**
  * Created by Oleksiy on 2/6/2016.
  */
-@Endpoint(httpMethod = Constants.Http.GET, relativeUrl = "/timelines/{category}", jsonExample = "todo")
+@Endpoint(httpMethod = Constants.Http.GET, relativeUrl = "/timelines/{category}", jsonExample = "todo2")
 public abstract class GetVideosInfo {
     @UrlPathParam("category")
     String category;

@@ -13,7 +13,7 @@ public class ExampleActivity extends AppCompatActivity {
         setContentView(R.layout.activity_example);
         Log.i("ExampleActivity", "Hello");
         TextView tv = (TextView) findViewById(R.id.text);
-        SimpleStringAccessor sup = new SimpleStringAccessor(); //generated based on @Assessor annotation in SimpleObject.java
+        SimpleStringAccessor sup = new SimpleStringAccessor();//generated based on @Assessor annotation in SimpleObject.java
         tv.setText(sup.getSimpleString());
     }
 }

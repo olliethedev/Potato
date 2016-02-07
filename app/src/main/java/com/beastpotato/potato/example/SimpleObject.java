@@ -7,5 +7,5 @@ import com.beastpotato.potato.api.Accessor;
  */
 public class SimpleObject {
     @Accessor
-    public static String simpleString = "string test 11";
+    public static String simpleString = "string test 13";
 }
