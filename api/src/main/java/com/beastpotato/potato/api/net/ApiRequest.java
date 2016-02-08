@@ -19,15 +19,15 @@ public class ApiRequest<T> extends com.android.volley.Request<T> {
     private final Map<String, String> headers;
     private final RequestCompletion<T> listener;
 
-    public ApiRequest(String url, Class<T> clazz, final RequestCompletion<T> completionListener) {
-        super(Method.GET, url, new Response.ErrorListener() {
+    public ApiRequest(int method, String url, Class<T> clazz, final RequestCompletion<T> completionListener) {
+        super(method, url, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 completionListener.onError(error);
             }
         });
         this.clazz = clazz;
-        this.headers = getBaseHeaders();
+        this.headers = new HashMap<>();
         this.listener = completionListener;
     }
 
@@ -59,11 +59,6 @@ public class ApiRequest<T> extends com.android.volley.Request<T> {
 
     public void addHeader(String key, String value) {
         headers.put(key, value);
-    }
-
-    private Map<String, String> getBaseHeaders() {
-        Map<String, String> headers = new HashMap<>();
-        return headers;
     }
 
     public interface RequestCompletion<T> {

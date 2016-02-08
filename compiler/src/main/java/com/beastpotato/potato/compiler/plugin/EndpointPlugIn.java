@@ -70,12 +70,16 @@ public class EndpointPlugIn extends BasePlugIn {
                     }
                 } catch (BaseGenerator.InitializationException e) {
                     log(Diagnostic.Kind.ERROR, String.format("Failed to initialize %1s due to %2s", RequestModelGenerator.class.getSimpleName(), e.getMessage()));
+                    e.printStackTrace();
                 } catch (BaseGenerator.GenerationException e) {
                     log(Diagnostic.Kind.ERROR, String.format("Code generator %1s failed due to %2s", RequestModelGenerator.class.getSimpleName(), e.getMessage()));
+                    e.printStackTrace();
                 } catch (BaseModelConverter.ConversionException e) {
                     log(Diagnostic.Kind.ERROR, String.format("Failed to convert %1s due to %2s", RequestModelConverter.class.getSimpleName(), e.getMessage()));
+                    e.printStackTrace();
                 } catch (IOException e) {
                     log(Diagnostic.Kind.ERROR, String.format("Failed to generate output file for %1s", RequestModelGenerator.class.getSimpleName()));
+                    e.printStackTrace();
                 }
             }
         }
