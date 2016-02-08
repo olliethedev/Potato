@@ -2,6 +2,7 @@ package com.beastpotato.potato.compiler;
 
 import com.beastpotato.potato.compiler.plugin.AccessorPlugIn;
 import com.beastpotato.potato.compiler.plugin.BasePlugIn;
+import com.beastpotato.potato.compiler.plugin.EndpointPlugIn;
 import com.beastpotato.potato.compiler.plugin.ProcessorLogger;
 import com.google.auto.service.AutoService;
 
@@ -42,6 +43,7 @@ public class PotatoProcessor extends AbstractProcessor implements ProcessorLogge
         filer = processingEnv.getFiler();
 
         add(AccessorPlugIn.class);
+        add(EndpointPlugIn.class);
     }
 
     private <T extends BasePlugIn> void add(Class<T> clazz) {
@@ -83,7 +85,7 @@ public class PotatoProcessor extends AbstractProcessor implements ProcessorLogge
             try {
                 plugIn.process(plugInAnnotationMap.get(plugIn), roundEnv);
             } catch (Exception e) {
-                log(Diagnostic.Kind.ERROR, String.format("Plug-in %1s failed to process annotations", plugIn.getClass().getSimpleName()));
+                log(Diagnostic.Kind.ERROR, String.format("Plug-in %1s failed to process annotations due to %2s", plugIn.getClass().getSimpleName(), e.getMessage()));
             }
         }
         return true;

@@ -32,9 +32,9 @@ public class AccessorPlugIn extends BasePlugIn {
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
-        Set<String> annotataions = new LinkedHashSet<String>();
-        annotataions.add(Accessor.class.getCanonicalName());
-        return annotataions;
+        Set<String> annotations = new LinkedHashSet<String>();
+        annotations.add(Accessor.class.getCanonicalName());
+        return annotations;
     }
 
     @Override
@@ -48,6 +48,7 @@ public class AccessorPlugIn extends BasePlugIn {
                 String propertyUpperCase = propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1);
                 TypeElement te = PlugInUtils.findEnclosingTypeElement(annotatedElement);
                 VariableElement ve = (VariableElement) annotatedElement;
+
                 log(Diagnostic.Kind.NOTE, "Field Name:" + annotatedElement.getSimpleName());
                 log(Diagnostic.Kind.NOTE, "Field Type:" + ve.asType());
                 log(Diagnostic.Kind.NOTE, "Enclosing TypeElement:" + te.getSimpleName());
@@ -61,10 +62,8 @@ public class AccessorPlugIn extends BasePlugIn {
                         .addModifiers(Modifier.PUBLIC)
                         .addMethod(getterMethod)
                         .build();
-
-
                 try {
-                    JavaFile.builder("com.beastpotato.potato.example", accessorClass).build().writeTo(getFiler());
+                    JavaFile.builder(getElementUtils().getPackageOf(te).toString(), accessorClass).build().writeTo(getFiler());
                 } catch (IOException e) {
                     log(Diagnostic.Kind.ERROR, e.toString());
                 }

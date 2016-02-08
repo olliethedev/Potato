@@ -43,4 +43,8 @@ public abstract class BasePlugIn {
     public Elements getElementUtils() {
         return elementUtils;
     }
+
+    public ProcessorLogger getLogger() {
+        return logger;
+    }
 }
