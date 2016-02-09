@@ -1,6 +1,5 @@
 package com.beastpotato.potato.compiler.generators;
 
-import com.beastpotato.potato.api.Body;
 import com.beastpotato.potato.api.Constants;
 import com.beastpotato.potato.api.Endpoint;
 import com.beastpotato.potato.api.HeaderParam;
@@ -76,8 +75,6 @@ public class RequestModelGenerator extends BaseGenerator<RequestModel> {
                 addUrlParam((VariableElement) element);
             } else if (isVariableElementAnnotated(element, HeaderParam.class)) {
                 addHeaderParam((VariableElement) element);
-            } else if (isVariableElementAnnotated(element, Body.class)) {
-                body = (VariableElement) element;
             }
         }
     }
@@ -94,8 +91,6 @@ public class RequestModelGenerator extends BaseGenerator<RequestModel> {
             parseUrlParams(urlParams, requestModel);
             log(Diagnostic.Kind.NOTE, String.format("Generating headerParams"));
             parseHeaderParams(headerParams, requestModel);
-            log(Diagnostic.Kind.NOTE, String.format("Generating body"));
-            parseBody(body, requestModel);
             return requestModel;
         } catch (Exception e) {
             e.printStackTrace();
@@ -107,8 +102,8 @@ public class RequestModelGenerator extends BaseGenerator<RequestModel> {
         Endpoint annotation = typeElement.getAnnotation(Endpoint.class);
         String relativeUrl = annotation.relativeUrl();
         Constants.Http method = annotation.httpMethod();
-        requestModel.addField(RequestModel.FieldType.RelativeUrl, relativeUrl, "relativeUrl", elementUtils.getTypeElement(relativeUrl.getClass().getCanonicalName()).asType());
-        requestModel.addField(RequestModel.FieldType.HttpMethod, method.name(), "httpMethod", elementUtils.getTypeElement(method.name().getClass().getCanonicalName()).asType());
+        requestModel.setMethod(method);
+        requestModel.setRelativeUrl(relativeUrl);
     }
 
     private void parseUrlPathParams(List<VariableElement> urlPathParams, RequestModel requestModel) {
@@ -132,12 +127,6 @@ public class RequestModelGenerator extends BaseGenerator<RequestModel> {
             HeaderParam annotation = varElement.getAnnotation(HeaderParam.class);
             String paramKey = annotation.value();
             requestModel.addField(RequestModel.FieldType.HeaderParam, paramKey, varElement.getSimpleName().toString(), varElement.asType());
-        }
-    }
-
-    private void parseBody(VariableElement variableElement, RequestModel requestModel) {
-        if (variableElement != null) {
-            requestModel.addField(RequestModel.FieldType.Body, "", variableElement.getSimpleName().toString(), variableElement.asType());
         }
     }
 }
