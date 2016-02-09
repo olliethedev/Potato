@@ -102,8 +102,10 @@ public class RequestModelGenerator extends BaseGenerator<RequestModel> {
         Endpoint annotation = typeElement.getAnnotation(Endpoint.class);
         String relativeUrl = annotation.relativeUrl();
         Constants.Http method = annotation.httpMethod();
+        String exampleJson = annotation.jsonExample();
         requestModel.setMethod(method);
         requestModel.setRelativeUrl(relativeUrl);
+        requestModel.setExampleJson(exampleJson);
     }
 
     private void parseUrlPathParams(List<VariableElement> urlPathParams, RequestModel requestModel) {

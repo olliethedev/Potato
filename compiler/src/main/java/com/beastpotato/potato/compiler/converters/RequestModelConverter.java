@@ -178,8 +178,8 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
 
     private MethodSpec makeSendMethod(RequestModel model) {
         ClassName completionType = ClassName.get("com.beastpotato.potato.api.net.ApiRequest", "RequestCompletion");
-        ClassName debugModelTypeVariableName = ClassName.get("com.beastpotato.potato.api.net", "DebugResponseModel");//todo parse json example
-        ParameterizedTypeName parameterizedCompletionParam = ParameterizedTypeName.get(completionType, debugModelTypeVariableName);
+        ClassName responseTypeVariableName = ClassName.get(model.getPackageName(), model.getResponseClassName());
+        ParameterizedTypeName parameterizedCompletionParam = ParameterizedTypeName.get(completionType, responseTypeVariableName);
 
         ParameterSpec completionParam = ParameterSpec.builder(parameterizedCompletionParam, "completion")
                 .addModifiers(Modifier.FINAL)
@@ -191,7 +191,7 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
         }
 
         CodeBlock.Builder sendLogicBlock = CodeBlock.builder()
-                .addStatement("com.beastpotato.potato.api.net.ApiRequest<DebugResponseModel> request = new com.beastpotato.potato.api.net.ApiRequest<>(this.httpMethod, getFullUrl(), DebugResponseModel.class, completion)")
+                .addStatement("com.beastpotato.potato.api.net.ApiRequest<" + model.getResponseClassName() + "> request = new com.beastpotato.potato.api.net.ApiRequest<>(this.httpMethod, getFullUrl(), " + model.getResponseClassName() + ".class, completion)")
                 .add(headersBlock.build())
                 .addStatement("getRequestQueue().add(request)");
 

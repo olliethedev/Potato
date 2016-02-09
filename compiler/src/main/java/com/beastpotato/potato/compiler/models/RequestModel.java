@@ -18,6 +18,8 @@ public class RequestModel {
     private Constants.Http method;
     private String exampleJson;
     private String modelName;
+    private String responseClassName;
+    private String packageName;
 
     public RequestModel(TypeElement typeElement) {
         this.modelName = typeElement.getSimpleName().toString();
@@ -59,6 +61,22 @@ public class RequestModel {
 
     public List<RequestModelFieldDef> getHeaderParamFields() {
         return headerParamFields;
+    }
+
+    public String getResponseClassName() {
+        return responseClassName;
+    }
+
+    public void setResponseClassName(String responseClassName) {
+        this.responseClassName = responseClassName;
+    }
+
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
     }
 
     public TypeElement getTypeElement() {
