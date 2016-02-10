@@ -1,6 +1,5 @@
 package com.beastpotato.potato.compiler;
 
-import com.beastpotato.potato.compiler.plugin.AccessorPlugIn;
 import com.beastpotato.potato.compiler.plugin.BasePlugIn;
 import com.beastpotato.potato.compiler.plugin.EndpointPlugIn;
 import com.beastpotato.potato.compiler.plugin.ProcessorLogger;
@@ -42,7 +41,7 @@ public class PotatoProcessor extends AbstractProcessor implements ProcessorLogge
         elementUtils = processingEnv.getElementUtils();
         filer = processingEnv.getFiler();
 
-        add(AccessorPlugIn.class);
+        //add more plugins bellow
         add(EndpointPlugIn.class);
     }
 

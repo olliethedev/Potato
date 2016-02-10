@@ -178,7 +178,7 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
 
     private MethodSpec makeSendMethod(RequestModel model) {
         ClassName completionType = ClassName.get("com.beastpotato.potato.api.net.ApiRequest", "RequestCompletion");
-        ClassName responseTypeVariableName = ClassName.get(model.getPackageName(), model.getResponseClassName());
+        ClassName responseTypeVariableName = ClassName.get(model.getResponsePackageName(), model.getResponseClassName());
         ParameterizedTypeName parameterizedCompletionParam = ParameterizedTypeName.get(completionType, responseTypeVariableName);
 
         ParameterSpec completionParam = ParameterSpec.builder(parameterizedCompletionParam, "completion")

@@ -20,6 +20,7 @@ public class RequestModel {
     private String modelName;
     private String responseClassName;
     private String packageName;
+    private String responsePackageName;
 
     public RequestModel(TypeElement typeElement) {
         this.modelName = typeElement.getSimpleName().toString();
@@ -69,6 +70,14 @@ public class RequestModel {
 
     public void setResponseClassName(String responseClassName) {
         this.responseClassName = responseClassName;
+    }
+
+    public String getResponsePackageName() {
+        return responsePackageName;
+    }
+
+    public void setResponsePackageName(String responsePackageName) {
+        this.responsePackageName = responsePackageName;
     }
 
     public String getPackageName() {

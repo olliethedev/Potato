@@ -7,7 +7,7 @@ import android.widget.TextView;
 
 import com.android.volley.VolleyError;
 import com.beastpotato.potato.api.net.ApiRequest;
-import com.beastpotato.potato.api.net.DebugResponseModel;
+import com.beastpotato.potato.example.response.GetVideosInfoApiResponse;
 
 public class ExampleActivity extends AppCompatActivity {
     private static String TAG = "ExampleActivity";
@@ -16,10 +16,7 @@ public class ExampleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_example);
         Log.i("ExampleActivity", "Hello");
-        TextView tv = (TextView) findViewById(R.id.text);
-        SimpleStringAccessor sup = new SimpleStringAccessor();//generated based on @Assessor annotation in SimpleObject.java
-        tv.setText(sup.getSimpleString());
-
+        final TextView tv = (TextView) findViewById(R.id.text);
         //Network test
         GetVideosInfoApiRequest request = new GetVideosInfoApiRequest("https://community-vineapp.p.mashape.com", this);//Generated based on @Endpoint annotation in GetVideosInfo.java
         request.setApiKey("Sh7KOqP6lQmshVcLl2xFAG4BOfr9p1TfANBjsnduXWDjnqjNZY");
@@ -28,10 +25,10 @@ public class ExampleActivity extends AppCompatActivity {
         request.setSortType("desc");
 
         Log.i(TAG, "sending request...");
-        request.send(new ApiRequest.RequestCompletion<DebugResponseModel>() {
+        request.send(new ApiRequest.RequestCompletion<GetVideosInfoApiResponse>() {
             @Override
-            public void onResponse(DebugResponseModel data) {
-                Log.i(TAG, "response:" + data.toString());
+            public void onResponse(GetVideosInfoApiResponse data) {
+                tv.setText("Response records count:" + data.getData().getCount());
             }
 
             @Override
