@@ -1,6 +1,5 @@
 package com.beastpotato.potato.compiler.plugin;
 
-import com.beastpotato.potato.api.Body;
 import com.beastpotato.potato.api.Endpoint;
 import com.beastpotato.potato.api.HeaderParam;
 import com.beastpotato.potato.api.UrlParam;
@@ -9,9 +8,12 @@ import com.beastpotato.potato.compiler.converters.BaseModelConverter;
 import com.beastpotato.potato.compiler.converters.RequestModelConverter;
 import com.beastpotato.potato.compiler.generators.BaseGenerator;
 import com.beastpotato.potato.compiler.generators.RequestModelGenerator;
+import com.beastpotato.potato.compiler.json.JsonCodeWriter;
+import com.beastpotato.potato.compiler.json.JsonParser;
 import com.beastpotato.potato.compiler.models.RequestModel;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
+import com.sun.codemodel.JCodeModel;
 
 import java.io.IOException;
 import java.util.LinkedHashSet;
@@ -42,7 +44,6 @@ public class EndpointPlugIn extends BasePlugIn {
         annotations.add(UrlPathParam.class.getCanonicalName());
         annotations.add(UrlParam.class.getCanonicalName());
         annotations.add(HeaderParam.class.getCanonicalName());
-        annotations.add(Body.class.getCanonicalName());
         return annotations;
     }
 
@@ -55,6 +56,8 @@ public class EndpointPlugIn extends BasePlugIn {
             } else {
                 TypeElement te = (TypeElement) annotatedElement;
                 RequestModelGenerator requestModelGenerator = new RequestModelGenerator(te, getTypeUtils(), getElementUtils(), getLogger());
+                JsonCodeWriter codeWriter = new JsonCodeWriter(getFiler(), getLogger());
+                RequestModelConverter modelConverter = new RequestModelConverter(getLogger(), getTypeUtils(), getElementUtils());
                 try {
                     log(Diagnostic.Kind.NOTE, "initializing...");
                     requestModelGenerator.initialize();
@@ -62,12 +65,29 @@ public class EndpointPlugIn extends BasePlugIn {
                     log(Diagnostic.Kind.NOTE, "generating model...");
                     RequestModel model = requestModelGenerator.generate();
                     log(Diagnostic.Kind.NOTE, "model generated...");
-                    RequestModelConverter modelConverter = new RequestModelConverter(getLogger(), getTypeUtils(), getElementUtils());
+                    String packageName = getElementUtils().getPackageOf(te).toString();
+                    String responsePackageName = getElementUtils().getPackageOf(te).toString() + ".response";
+                    String responseClassName = te.getSimpleName() + "ApiResponse";
+                    model.setPackageName(packageName);
+                    model.setResponseClassName(responseClassName);
+                    model.setResponsePackageName(responsePackageName);
+                    log(Diagnostic.Kind.NOTE, "parsing JSON...");
+                    JCodeModel responseCodeModel = JsonParser.parseJsonToModel(responsePackageName, responseClassName, model.getExampleJson(), getLogger());
+                    log(Diagnostic.Kind.NOTE, "parsing JSON done.");
+                    log(Diagnostic.Kind.NOTE, "Writing JSON Java model to file...");
+                    responseCodeModel.build(codeWriter);
+                    log(Diagnostic.Kind.NOTE, "Writing JSON Java model to file done.");
+                    log(Diagnostic.Kind.NOTE, "Converting Endpoint annotation data model to java object...");
                     List<TypeSpec> typeSpecList = modelConverter.convert(model);
+                    log(Diagnostic.Kind.NOTE, "Converting Endpoint annotation data model to java object done.");
+                    log(Diagnostic.Kind.NOTE, "Writing Endpoint request objects to file...");
                     typeSpecList.add(RequestModelConverter.getRequestSuperClass());//must be generated once or Filer will throw
                     for (TypeSpec typeSpec : typeSpecList) {
-                        JavaFile.builder(getElementUtils().getPackageOf(te).toString(), typeSpec).build().writeTo(getFiler());
+                        log(Diagnostic.Kind.NOTE, "Writing " + typeSpec.name + "...");
+                        JavaFile.builder(packageName, typeSpec).build().writeTo(getFiler());
                     }
+                    log(Diagnostic.Kind.NOTE, "Writing request objects to file done.");
+                    log(Diagnostic.Kind.NOTE, "==================Finished ==================");
                 } catch (BaseGenerator.InitializationException e) {
                     log(Diagnostic.Kind.ERROR, String.format("Failed to initialize %1s due to %2s", RequestModelGenerator.class.getSimpleName(), e.getMessage()));
                     e.printStackTrace();
@@ -76,6 +96,9 @@ public class EndpointPlugIn extends BasePlugIn {
                     e.printStackTrace();
                 } catch (BaseModelConverter.ConversionException e) {
                     log(Diagnostic.Kind.ERROR, String.format("Failed to convert %1s due to %2s", RequestModelConverter.class.getSimpleName(), e.getMessage()));
+                    e.printStackTrace();
+                } catch (JsonParser.JsonParserException e) {
+                    log(Diagnostic.Kind.ERROR, String.format("Failed to parse sample JSON"));
                     e.printStackTrace();
                 } catch (IOException e) {
                     log(Diagnostic.Kind.ERROR, String.format("Failed to generate output file for %1s", RequestModelGenerator.class.getSimpleName()));

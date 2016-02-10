@@ -18,4 +18,5 @@ publish {
 dependencies {
     compile 'com.mcxiaoke.volley:library:1.0.19'
     compile 'com.google.code.gson:gson:2.5'
+    compile 'org.glassfish.main:javax.annotation:4.0-b33'
 }
