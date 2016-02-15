@@ -26,7 +26,7 @@ import com.beastpotato.potato.api.UrlPathParam;
                         "            \"private\":0,\n" +
                         "            \"videoWebmUrl\":null,\n" +
                         "            \"loops\":{\n" +
-                        "               \"count\":1519177.0,\n" +
+                        "               \"count\":1519176.0,\n" +
                         "               \"velocity\":122.38933333333335,\n" +
                         "               \"onFire\":1\n" +
                         "            },\n" +
