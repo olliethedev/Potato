@@ -151,17 +151,21 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
         }
 
         CodeBlock.Builder urlParamsBlock = CodeBlock.builder();
+        urlParamsBlock.beginControlFlow("try");
         int i = 0;
         for (RequestModel.RequestModelFieldDef fieldDef : model.getUrlParamFields()) {
             if (i == 0) {
                 urlParamsBlock.addStatement("fullUrl += \"?\"");
             }
-            urlParamsBlock.addStatement("fullUrl += \"" + fieldDef.fieldSerializableName + "=\"+ this." + fieldDef.fieldName);
+            urlParamsBlock.addStatement("fullUrl += \"" + fieldDef.fieldSerializableName + "=\"+ java.net.URLEncoder.encode(this." + fieldDef.fieldName + ",\"UTF-8\")");
             if (i != model.getUrlParamFields().size() - 1) {
                 urlParamsBlock.addStatement("fullUrl += \"&\"");
             }
             i++;
         }
+        urlParamsBlock.nextControlFlow("catch (java.io.UnsupportedEncodingException e)");
+        urlParamsBlock.addStatement("e.printStackTrace()");
+        urlParamsBlock.endControlFlow();
 
         CodeBlock.Builder sendLogicBlock = CodeBlock.builder()
                 .add(fullUrlBlock.build())

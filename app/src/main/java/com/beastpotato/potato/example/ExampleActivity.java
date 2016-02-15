@@ -33,7 +33,7 @@ public class ExampleActivity extends AppCompatActivity {
 
             @Override
             public void onError(VolleyError error) {
-                Log.e(TAG, error.toString());
+                tv.setText(error.toString());
             }
         });
     }
