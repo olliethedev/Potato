@@ -6,7 +6,7 @@ sourceCompatibility = JavaVersion.VERSION_1_7
 targetCompatibility = JavaVersion.VERSION_1_7
 
 publish {
-    artifactId = 'savage_potato_api'
+    artifactId = 'potato_api'
     userOrg = rootProject.userOrg
     groupId = rootProject.groupId
     uploadName = rootProject.uploadName
