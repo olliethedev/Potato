@@ -19,10 +19,6 @@ dependencies {
 }
 
 publish {
-    filesSpec {
-        from 'build/libs'
-        into '.'
-    }
     artifactId = 'potato_compiler'
     userOrg = rootProject.userOrg
     groupId = rootProject.groupId
