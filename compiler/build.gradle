@@ -27,4 +27,5 @@ publish {
     description = rootProject.description
     website = rootProject.website
     licences = rootProject.licences
+
 }
