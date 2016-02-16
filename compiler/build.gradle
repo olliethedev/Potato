@@ -19,7 +19,7 @@ dependencies {
 }
 
 publish {
-    artifactId = 'savage_potato_compiler'
+    artifactId = 'potato_compiler'
     userOrg = rootProject.userOrg
     groupId = rootProject.groupId
     uploadName = rootProject.uploadName

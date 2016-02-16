@@ -15,12 +15,14 @@ allprojects {
     }
 }
 
+//when new version is ready, update the data below and run the following command from Terminal :
+//gradlew clean build bintrayUpload -PbintrayUser={bintray username here} -PbintrayKey={bintray api key here} -PdryRun=falsey
 ext {
-    userOrg = 'savage'
-    groupId = 'com.savage'
-    uploadName = 'Android-potato'
+    userOrg = '3martynov'
+    groupId = 'com.beastpotato.potato'
+    uploadName = 'Potato'
     description = 'Annotation processing to help with automatic java object generation from endpoint definition'
-    publishVersion = '0.0.1'
-    website = 'https://github.com/OleksiyMartynov/Potato'
+    publishVersion = '1.0'
+    website = 'https://github.com/beast-potato/Potato'
     licences = ['MIT']
 }
