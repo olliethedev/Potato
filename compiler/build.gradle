@@ -9,13 +9,13 @@ dependencies {
     compile project(':api')
     compile 'com.google.auto.service:auto-service:1.0-rc2'
     compile 'com.squareup:javapoet:1.0.0'
-    compile files('libs/jsonschema2pojo-core-0.4.19.jar')
-    compile files('libs/codemodel-2.4.1.jar')
-    compile files('libs/commons-lang-2.4.jar')
-    compile files('libs/jackson-core-2.0.0.jar')
-    compile files('libs/jackson-databind-2.0.0.jar')
-    compile files('libs/jackson-annotations-2.0.0.jar')
-    compile files('libs/commons-lang3-3.4.jar')
+    compile 'org.jsonschema2pojo:jsonschema2pojo-gradle-plugin:0.4.19'
+    compile 'com.sun.codemodel:codemodel:2.4.1'
+    compile 'commons-lang:commons-lang:2.4'
+    compile 'com.fasterxml.jackson.core:jackson-core:2.0.0'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.0.0'
+    compile 'com.fasterxml.jackson.core:jackson-annotations:2.0.0'
+    compile 'org.apache.commons:commons-lang3:3.4'
 }
 
 publish {
@@ -27,4 +27,5 @@ publish {
     description = rootProject.description
     website = rootProject.website
     licences = rootProject.licences
+
 }

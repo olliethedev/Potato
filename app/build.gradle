@@ -22,12 +22,11 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile files('libs/volley.jar')
-}
-
-dependencies {
     compile project(':api')
     apt project(':compiler')
+//    compile 'com.beastpotato.potato:potato_api:${rootProject.publishVersion}'
+//    apt 'com.beastpotato.potato:potato_compiler:${rootProject.publishVersion}'
+    compile 'org.glassfish.main:javax.annotation:4.0-b33'
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.android.support:support-v4:23.1.1'
     compile 'com.mcxiaoke.volley:library:1.0.19'
