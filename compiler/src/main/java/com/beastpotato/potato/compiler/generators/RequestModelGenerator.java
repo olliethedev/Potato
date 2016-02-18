@@ -67,6 +67,7 @@ public class RequestModelGenerator extends BaseGenerator<RequestModel> {
 
     @Override
     public void initialize() throws InitializationException {
+        log(Diagnostic.Kind.NOTE, "initializing...");
         for (Element element : classElement.getEnclosedElements()) {
             log(Diagnostic.Kind.NOTE, String.format("Initializing %1s", element.getSimpleName()));
             if (isVariableElementAnnotated(element, UrlPathParam.class)) {
@@ -77,10 +78,12 @@ public class RequestModelGenerator extends BaseGenerator<RequestModel> {
                 addHeaderParam((VariableElement) element);
             }
         }
+        log(Diagnostic.Kind.NOTE, "initialization done.");
     }
 
     @Override
     public RequestModel generate() throws GenerationException {
+        log(Diagnostic.Kind.NOTE, "generating model...");
         try {
             RequestModel requestModel = new RequestModel(classElement);
             log(Diagnostic.Kind.NOTE, String.format("Generating classElement"));
@@ -91,6 +94,7 @@ public class RequestModelGenerator extends BaseGenerator<RequestModel> {
             parseUrlParams(urlParams, requestModel);
             log(Diagnostic.Kind.NOTE, String.format("Generating headerParams"));
             parseHeaderParams(headerParams, requestModel);
+            log(Diagnostic.Kind.NOTE, "model generated...");
             return requestModel;
         } catch (Exception e) {
             e.printStackTrace();
