@@ -84,7 +84,7 @@ public abstract class DiscoverMovieEndpoint {
           return page >= 1 && page <= 1000;
       }
       
-      @Validation(fieldName = "discovery_type")
+      @Validation(fieldName = "discover_type")
       public static boolean isDiscoveryTypeValid(String discoveryStr){
           return discoveryStr!=null && (discoveryStr.equals("tv") || discoveryStr.equals("movie"));
       }
