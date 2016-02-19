@@ -1,6 +1,7 @@
 package com.beastpotato.potato.compiler.converters;
 
 import com.beastpotato.potato.compiler.models.RequestModel;
+import com.beastpotato.potato.compiler.models.ValidatorModel;
 import com.beastpotato.potato.compiler.plugin.ProcessorLogger;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
@@ -12,11 +13,13 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.lang.model.element.Modifier;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import javax.tools.Diagnostic;
 
 /**
  * Created by Oleksiy on 2/6/2016.
@@ -25,9 +28,11 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
     private static TypeSpec superTypeSpec;
     private static ClassName contextClass = ClassName.get("android.content", "Context"),
             requestQueueClass = ClassName.get("com.android.volley", "RequestQueue");
+    HashMap<String, ValidatorModel> validatorModelHashMap;
 
-    public RequestModelConverter(ProcessorLogger logger, Types typeUtils, Elements elementUtils) {
+    public RequestModelConverter(ProcessorLogger logger, Types typeUtils, Elements elementUtils, HashMap<String, ValidatorModel> validatorModelHashMap) {
         super(logger, typeUtils, elementUtils);
+        this.validatorModelHashMap = validatorModelHashMap;
     }
 
     public static TypeSpec getRequestSuperClass() {
@@ -67,15 +72,18 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
 
     @Override
     public List<TypeSpec> convert(RequestModel model) throws ConversionException {
+        getLogger().log(this, Diagnostic.Kind.NOTE, "Converting Endpoint annotation data model to java object...");
         try {
             List<TypeSpec> typeSpecs = new ArrayList<>();
             TypeSpec requestSuper = getRequestSuperClass();
             TypeSpec.Builder classBuilder = TypeSpec.classBuilder(model.getModelName() + "ApiRequest")
                     .addModifiers(Modifier.PUBLIC)
+                    .addType(makeFieldsEnum(model))
                     .addField(String.class, "baseUrl", Modifier.PRIVATE)
                     .addField(makeRelativeUrlFieldSpec(model))
                     .addField(makeMethodTypeFieldSpec(model))
                     .addMethod(makeConstructor(model))
+                    .addMethod(makeValidationMethodSpec(model))
                     .addMethod(makeSendMethod(model))
                     .addMethod(makeGetFullUrlMethod(model))
                     .superclass(ClassName.get(getElementUtils().getPackageOf(model.getTypeElement()).getQualifiedName().toString(), requestSuper.name));
@@ -87,6 +95,7 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
             }
             TypeSpec request = classBuilder.build();
             typeSpecs.add(request);
+            getLogger().log(this, Diagnostic.Kind.NOTE, "Converting Endpoint annotation data model to java object done.");
             return typeSpecs;
         } catch (Exception e) {
             throw new ConversionException(String.format("Could not convert %1s to TypeSpec", model.getClass().getSimpleName()));
@@ -147,7 +156,8 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
 
         CodeBlock.Builder urlPathParamReplaceBlock = CodeBlock.builder();
         for (RequestModel.RequestModelFieldDef fieldDef : model.getUrlPathParamFields()) {
-            fullUrlBlock.addStatement("fullUrl = fullUrl.replace(\"{" + fieldDef.fieldSerializableName + "}\",this." + fieldDef.fieldName + ")");
+            String statementStr = "fullUrl = fullUrl.replace(\"{" + fieldDef.fieldSerializableName + "}\",this." + fieldDef.fieldName + ")";
+            fullUrlBlock.add(ifNotNull(fieldDef, statementStr));
         }
 
         CodeBlock.Builder urlParamsBlock = CodeBlock.builder();
@@ -157,7 +167,8 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
             if (i == 0) {
                 urlParamsBlock.addStatement("fullUrl += \"?\"");
             }
-            urlParamsBlock.addStatement("fullUrl += \"" + fieldDef.fieldSerializableName + "=\" + java.net.URLEncoder.encode(this." + fieldDef.fieldName + ",\"UTF-8\")");
+            String statementStr = "fullUrl += \"" + fieldDef.fieldSerializableName + "=\" + java.net.URLEncoder.encode(this." + fieldDef.fieldName + ",\"UTF-8\")";
+            urlParamsBlock.add(ifNotNull(fieldDef, statementStr));
             if (i != model.getUrlParamFields().size() - 1) {
                 urlParamsBlock.addStatement("fullUrl += \"&\"");
             }
@@ -191,7 +202,8 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
 
         CodeBlock.Builder headersBlock = CodeBlock.builder();
         for (RequestModel.RequestModelFieldDef fieldDef : model.getHeaderParamFields()) {
-            headersBlock.addStatement("request.addHeader(\"" + fieldDef.fieldSerializableName + "\",this." + fieldDef.fieldName + ")");
+            String statementStr = "request.addHeader(\"" + fieldDef.fieldSerializableName + "\",this." + fieldDef.fieldName + ")";
+            headersBlock.add(ifNotNull(fieldDef, statementStr));
         }
 
         CodeBlock.Builder sendLogicBlock = CodeBlock.builder()
@@ -203,6 +215,58 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
                 .addParameter(completionParam)
                 .addCode(sendLogicBlock.build())
                 .addModifiers(Modifier.PUBLIC)
+                .build();
+    }
+
+    private String validatorModelToMethodCall(ValidatorModel validatorModel, RequestModel.RequestModelFieldDef fieldDef) {
+        return validatorModel.getPackageName() + "." + validatorModel.getMethodName() + "(" + "this." + fieldDef.fieldName + ")";
+    }
+
+    private CodeBlock makeValidationBlock(ValidatorModel validatorModel, RequestModel.RequestModelFieldDef fieldDef, String statementStr) {
+        return CodeBlock.builder().beginControlFlow("if(!" + validatorModelToMethodCall(validatorModel, fieldDef) + ")")
+                .addStatement(statementStr)
+                .endControlFlow()
+                .build();
+    }
+
+    private TypeSpec makeFieldsEnum(RequestModel model) {
+        TypeSpec.Builder fieldsEnumSpecBuilder = TypeSpec.enumBuilder("Fields")
+                .addModifiers(Modifier.PUBLIC)
+                .addField(String.class, "fieldStr", Modifier.PRIVATE, Modifier.FINAL)
+                .addMethod(MethodSpec.constructorBuilder()
+                        .addParameter(String.class, "fieldStr")
+                        .addStatement("this.$N = $N", "fieldStr", "fieldStr")
+                        .build());
+        for (RequestModel.RequestModelFieldDef fieldDef : model.getAllFields()) {
+            fieldsEnumSpecBuilder.addEnumConstant(fieldDef.fieldName, TypeSpec.anonymousClassBuilder("$S", fieldDef.fieldSerializableName)
+                    .build());
+        }
+
+
+        return fieldsEnumSpecBuilder.build();
+    }
+
+    private MethodSpec makeValidationMethodSpec(RequestModel model) {
+        ClassName returnType = ClassName.get("java.util", "List");
+        ClassName listTypeVariableName = ClassName.bestGuess("Fields");
+        ParameterizedTypeName parameterizedCompletionParam = ParameterizedTypeName.get(returnType, listTypeVariableName);
+        MethodSpec.Builder validationMethodSpecBuilder = MethodSpec.methodBuilder("validateFields")
+                .returns(parameterizedCompletionParam)
+                .addStatement("java.util.List<Fields> fieldsFailedValidation = new java.util.ArrayList<Fields>()");
+        for (RequestModel.RequestModelFieldDef fieldDef : model.getAllFields()) {
+            if (validatorModelHashMap.containsKey(fieldDef.fieldSerializableName)) {
+                ValidatorModel validatorModel = validatorModelHashMap.get(fieldDef.fieldSerializableName);
+                validationMethodSpecBuilder.addCode(makeValidationBlock(validatorModel, fieldDef, "fieldsFailedValidation.add(Fields." + fieldDef.fieldName + ")"));
+            }
+        }
+        validationMethodSpecBuilder.addStatement("return fieldsFailedValidation");
+        return validationMethodSpecBuilder.build();
+    }
+
+    private CodeBlock ifNotNull(RequestModel.RequestModelFieldDef fieldDef, String statement) {
+        return CodeBlock.builder().beginControlFlow("if(this." + fieldDef.fieldName + " != null)")
+                .addStatement(statement)
+                .endControlFlow()
                 .build();
     }
 }

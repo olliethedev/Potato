@@ -19,6 +19,8 @@ import org.jsonschema2pojo.rules.RuleFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import javax.tools.Diagnostic;
+
 /**
  * Created by Oleksiy on 2/8/2016.
  */
@@ -119,14 +121,15 @@ public class JsonParser {
     };
 
     public static String parseJsonToClassSource(String packageName, String className, String jsonStr, ProcessorLogger messager) throws JsonParserException {
+        messager.log(JsonParser.class, Diagnostic.Kind.NOTE, "parsing JSON to classSource...");
         JCodeModel codeModel = new JCodeModel();
-
         SchemaMapper mapper = new SchemaMapper(new RuleFactory(config, new Jackson2Annotator(), new SchemaStore()), new SchemaGenerator());
         try {
             mapper.generate(codeModel, className, packageName, jsonStr);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             CodeWriter codeWriter = new SingleStreamCodeWriter(baos);
             codeModel.build(codeWriter);
+            messager.log(JsonParser.class, Diagnostic.Kind.NOTE, "parsing JSON done.");
             return baos.toString();
         } catch (IOException e) {
             throw new JsonParserException("JsonParser failed:" + e.getMessage(), e.getCause());
@@ -135,10 +138,12 @@ public class JsonParser {
     }
 
     public static JCodeModel parseJsonToModel(String packageName, String className, String jsonStr, ProcessorLogger messager) throws JsonParserException {
+        messager.log(JsonParser.class, Diagnostic.Kind.NOTE, "parsing JSON to JCodeModel...");
         JCodeModel codeModel = new JCodeModel();
         SchemaMapper mapper = new SchemaMapper(new RuleFactory(config, new GsonAnnotator(), new SchemaStore()), new SchemaGenerator());
         try {
             mapper.generate(codeModel, className, packageName, jsonStr);
+            messager.log(JsonParser.class, Diagnostic.Kind.NOTE, "parsing JSON done.");
             return codeModel;
         } catch (Exception e) {
             throw new JsonParserException("JsonParser failed:" + e.getMessage(), e.getCause());

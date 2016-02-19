@@ -16,7 +16,7 @@ allprojects {
 }
 
 //when new version is ready, update the data below and run the following command from Terminal :
-//gradlew clean build bintrayUpload -PbintrayUser={bintray username here} -PbintrayKey={bintray api key here} -PdryRun=falsey
+//gradlew clean build bintrayUpload -PbintrayUser=3martynov -PbintrayKey=4e405f8d10cf8714bd47a6b0b86c02cb11d4fae7 -PdryRun=falsey
 ext {
     userOrg = '3martynov'
     groupId = 'com.beastpotato.potato'
