@@ -22,7 +22,6 @@ public class ExampleActivity extends AppCompatActivity {
         request.setApiKey("Sh7KOqP6lQmshVcLl2xFAG4BOfr9p1TfANBjsnduXWDjnqjNZY");
         request.setContentType("application/json");
         request.setCategory("popular");
-        request.setSortType("desc");
 
         Log.i(TAG, "sending request...");
         request.send(new ApiRequest.RequestCompletion<GetVideosInfoApiResponse>() {

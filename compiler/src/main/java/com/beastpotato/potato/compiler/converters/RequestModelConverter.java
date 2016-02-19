@@ -157,7 +157,7 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
         CodeBlock.Builder urlPathParamReplaceBlock = CodeBlock.builder();
         for (RequestModel.RequestModelFieldDef fieldDef : model.getUrlPathParamFields()) {
             String statementStr = "fullUrl = fullUrl.replace(\"{" + fieldDef.fieldSerializableName + "}\",this." + fieldDef.fieldName + ")";
-            fullUrlBlock.addStatement(statementStr);
+            fullUrlBlock.add(ifNotNull(fieldDef, statementStr));
         }
 
         CodeBlock.Builder urlParamsBlock = CodeBlock.builder();
@@ -168,7 +168,7 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
                 urlParamsBlock.addStatement("fullUrl += \"?\"");
             }
             String statementStr = "fullUrl += \"" + fieldDef.fieldSerializableName + "=\" + java.net.URLEncoder.encode(this." + fieldDef.fieldName + ",\"UTF-8\")";
-            urlParamsBlock.addStatement(statementStr);
+            urlParamsBlock.add(ifNotNull(fieldDef, statementStr));
             if (i != model.getUrlParamFields().size() - 1) {
                 urlParamsBlock.addStatement("fullUrl += \"&\"");
             }
@@ -203,7 +203,7 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
         CodeBlock.Builder headersBlock = CodeBlock.builder();
         for (RequestModel.RequestModelFieldDef fieldDef : model.getHeaderParamFields()) {
             String statementStr = "request.addHeader(\"" + fieldDef.fieldSerializableName + "\",this." + fieldDef.fieldName + ")";
-            headersBlock.addStatement(statementStr);
+            headersBlock.add(ifNotNull(fieldDef, statementStr));
         }
 
         CodeBlock.Builder sendLogicBlock = CodeBlock.builder()
@@ -261,5 +261,12 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
         }
         validationMethodSpecBuilder.addStatement("return fieldsFailedValidation");
         return validationMethodSpecBuilder.build();
+    }
+
+    private CodeBlock ifNotNull(RequestModel.RequestModelFieldDef fieldDef, String statement) {
+        return CodeBlock.builder().beginControlFlow("if(this." + fieldDef.fieldName + " != null)")
+                .addStatement(statement)
+                .endControlFlow()
+                .build();
     }
 }

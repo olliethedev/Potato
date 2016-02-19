@@ -58,5 +58,6 @@
     <orderEntry type="library" exported="" name="commons-lang-2.6" level="project" />
     <orderEntry type="library" exported="" name="jackson-annotations-2.2.0" level="project" />
     <orderEntry type="library" exported="" name="jackson-core-2.2.0" level="project" />
+    <orderEntry type="library" exported="" name="compiler.compiler" level="project" />
   </component>
 </module>
