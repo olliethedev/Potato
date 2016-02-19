@@ -167,7 +167,7 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
             if (i == 0) {
                 urlParamsBlock.addStatement("fullUrl += \"?\"");
             }
-            String statementStr = "fullUrl += \"" + fieldDef.fieldSerializableName + "=\" + java.net.URLEncoder.encode(this." + fieldDef.fieldName + ",\"UTF-8\")";
+            String statementStr = "fullUrl += \"" + fieldDef.fieldSerializableName + "=\" + java.net.URLEncoder.encode(this." + fieldDef.fieldName + ".toString(),\"UTF-8\")";
             urlParamsBlock.add(ifNotNull(fieldDef, statementStr));
             if (i != model.getUrlParamFields().size() - 1) {
                 urlParamsBlock.addStatement("fullUrl += \"&\"");
