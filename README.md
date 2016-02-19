@@ -48,7 +48,7 @@ public abstract class DiscoverMovieEndpoint {
 ...
 }
   ```
-  2. Define fields that will be converted into Url Params, Url Path Params, and Header Params.
+  2. In the endpoint definition class add fields that will be converted into Url Params, Url Path Params, and Header Params.
   
   ```java
     ...
