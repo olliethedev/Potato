@@ -251,6 +251,7 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
         ClassName listTypeVariableName = ClassName.bestGuess("Fields");
         ParameterizedTypeName parameterizedCompletionParam = ParameterizedTypeName.get(returnType, listTypeVariableName);
         MethodSpec.Builder validationMethodSpecBuilder = MethodSpec.methodBuilder("validateFields")
+                .addModifiers(Modifier.PUBLIC)
                 .returns(parameterizedCompletionParam)
                 .addStatement("java.util.List<Fields> fieldsFailedValidation = new java.util.ArrayList<Fields>()");
         for (RequestModel.RequestModelFieldDef fieldDef : model.getAllFields()) {
