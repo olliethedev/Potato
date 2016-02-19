@@ -133,7 +133,7 @@ This will generate **DiscoverMovieEndpointApiRequest** in app>build>generated>so
   ...
   ```
   
-  4. Send request and handle respone.
+  4. Send request and handle response.
   
   ```java
   discoverRequest.send(new ApiRequest.RequestCompletion<DiscoverMovieEndpointApiResponse>() {
