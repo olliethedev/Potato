@@ -87,7 +87,7 @@ public class EndpointPlugIn extends BasePlugIn {
                     requestModelGenerator.initialize();
                     RequestModel model = requestModelGenerator.generate();
                     String packageName = getElementUtils().getPackageOf(te).toString();
-                    String responsePackageName = getElementUtils().getPackageOf(te).toString() + ".response";
+                    String responsePackageName = getElementUtils().getPackageOf(te).toString() + "." + te.getSimpleName().toString().toLowerCase() + "response";
                     String responseClassName = te.getSimpleName() + "ApiResponse";
                     model.setPackageName(packageName);
                     model.setResponseClassName(responseClassName);
