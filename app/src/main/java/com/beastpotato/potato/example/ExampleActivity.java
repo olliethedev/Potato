@@ -7,7 +7,7 @@ import android.widget.TextView;
 
 import com.android.volley.VolleyError;
 import com.beastpotato.potato.api.net.ApiRequest;
-import com.beastpotato.potato.example.response.GetVideosInfoApiResponse;
+import com.beastpotato.potato.example.getvideosinforesponse.GetVideosInfoApiResponse;
 
 public class ExampleActivity extends AppCompatActivity {
     private static String TAG = "ExampleActivity";

@@ -37,6 +37,7 @@ import javax.tools.Diagnostic;
  * Created by Oleksiy on 2/6/2016.
  */
 public class EndpointPlugIn extends BasePlugIn {
+    private boolean isBaseGenerated = false;
     public EndpointPlugIn(ProcessorLogger logger, Types typeUtils, Elements elementUtils, Filer filer) {
         super(logger, typeUtils, elementUtils, filer);
     }
@@ -87,7 +88,7 @@ public class EndpointPlugIn extends BasePlugIn {
                     requestModelGenerator.initialize();
                     RequestModel model = requestModelGenerator.generate();
                     String packageName = getElementUtils().getPackageOf(te).toString();
-                    String responsePackageName = getElementUtils().getPackageOf(te).toString() + ".response";
+                    String responsePackageName = getElementUtils().getPackageOf(te).toString() + "." + te.getSimpleName().toString().toLowerCase() + "response";
                     String responseClassName = te.getSimpleName() + "ApiResponse";
                     model.setPackageName(packageName);
                     model.setResponseClassName(responseClassName);
@@ -98,7 +99,10 @@ public class EndpointPlugIn extends BasePlugIn {
                     log(Diagnostic.Kind.NOTE, "Writing JSON Java model to file done.");
                     List<TypeSpec> typeSpecList = modelConverter.convert(model);
                     log(Diagnostic.Kind.NOTE, "Writing Endpoint request objects to file...");
-                    typeSpecList.add(RequestModelConverter.getRequestSuperClass());//must be generated once or Filer will throw
+                    if (!isBaseGenerated) {
+                        typeSpecList.add(RequestModelConverter.getRequestSuperClass());//must be generated once or Filer will throw
+                        isBaseGenerated = true;
+                    }
                     for (TypeSpec typeSpec : typeSpecList) {
                         log(Diagnostic.Kind.NOTE, "Writing " + typeSpec.name + "...");
                         JavaFile.builder(packageName, typeSpec).build().writeTo(getFiler());

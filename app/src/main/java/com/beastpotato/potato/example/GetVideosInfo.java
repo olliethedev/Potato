@@ -27,7 +27,7 @@ import com.beastpotato.potato.api.UrlPathParam;
                         "            \"videoWebmUrl\":null,\n" +
                         "            \"loops\":{\n" +
                         "               \"count\":1519178.0,\n" +
-                        "               \"velocity\":122.38933333333335,\n" +
+                        "               \"velocity\":122.38933333333334,\n" +
                         "               \"onFire\":1\n" +
                         "            },\n" +
                         "            \"thumbnailUrl\":\"http://v.cdn.vine.co/r/videos/584F3E7BEE1308986059115442176_4253661e252.5.1.10941098180513993257.mp4.jpg?versionId=q.NYGdoMV4KEKkLEFFStlIy_k15BqWm0\",\n" +
