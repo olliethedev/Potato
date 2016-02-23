@@ -77,8 +77,16 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
                             .build())
                     .build();
 
+            ClassName returnType = ClassName.get("java.util", "List");
+            ParameterizedTypeName parameterizedReturnParam = ParameterizedTypeName.get(returnType, TypeVariableName.get("T"));
+            MethodSpec validateFieldsMethod = MethodSpec.methodBuilder("validateFields")
+                    .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
+                    .addTypeVariable(TypeVariableName.get("T", ClassName.bestGuess("FieldsDef")))
+                    .returns(parameterizedReturnParam)
+                    .build();
+
             superTypeSpec = TypeSpec.classBuilder("RequestBase")
-                    .addModifiers(Modifier.ABSTRACT)
+                    .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
                     .addTypeVariable(TypeVariableName.get("T"))
                     .addType(fieldDefInterfaceSpec)
                     .addField(requestQueue)
@@ -86,6 +94,7 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
                     .addMethod(getRequestQueue)
                     .addMethod(constructor)
                     .addMethod(sendMethod)
+                    .addMethod(validateFieldsMethod)
                     .build();
         }
         return superTypeSpec;
@@ -284,6 +293,7 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
         MethodSpec.Builder validationMethodSpecBuilder = MethodSpec.methodBuilder("validateFields")
                 .addModifiers(Modifier.PUBLIC)
                 .returns(parameterizedCompletionParam)
+                .addAnnotation(Override.class)
                 .addStatement("java.util.List<Fields> fieldsFailedValidation = new java.util.ArrayList<Fields>()");
         for (RequestModel.RequestModelFieldDef fieldDef : model.getAllFields()) {
             if (validatorModelHashMap.containsKey(fieldDef.fieldSerializableName)) {
