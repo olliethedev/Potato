@@ -15,7 +15,7 @@ buildscript {
     }
     dependencies {
         ...
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.6'
     }
 }
 ...
@@ -27,8 +27,8 @@ This adds a dependency for **com.neenbedankt.gradle.plugins:android-apt** plug-i
 apply plugin: 'com.neenbedankt.android-apt'
 ...
 dependencies {
-    compile 'com.beastpotato.potato:potato_api:1.5'
-    apt 'com.beastpotato.potato:potato_compiler:1.5'
+    compile 'com.beastpotato.potato:potato_api:1.8'
+    apt 'com.beastpotato.potato:potato_compiler:1.8'
     compile 'org.glassfish.main:javax.annotation:4.0-b33'
     ...
 }
@@ -151,4 +151,5 @@ This will generate **DiscoverMovieEndpointApiRequest** in app>build>generated>so
   ```
   
 ## 6. Profit.
-Full exaple project available [HERE](https://github.com/beast-potato/Movie-Info-App)
+* Simple example project available in this repository. Go to the **app** module or click [HERE](https://github.com/beast-potato/Potato/tree/master/app).
+* Advanced example project available [HERE](https://github.com/beast-potato/Movie-Info-App). This project demonstrates use of Potato Library with Android Data Binding Library.
