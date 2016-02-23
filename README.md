@@ -151,4 +151,5 @@ This will generate **DiscoverMovieEndpointApiRequest** in app>build>generated>so
   ```
   
 ## 6. Profit.
-Full exaple project available [HERE](https://github.com/beast-potato/Movie-Info-App)
+* Simple example project available in this repository. Go to the **app** module or click [HERE](https://github.com/beast-potato/Potato/tree/master/app).
+* Advanced example project available [HERE](https://github.com/beast-potato/Movie-Info-App). This project demonstrates use of Potato Library with Android Data Binding Library.
