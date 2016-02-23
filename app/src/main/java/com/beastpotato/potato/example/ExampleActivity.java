@@ -29,7 +29,7 @@ public class ExampleActivity extends AppCompatActivity {
         Log.i(TAG, "sending request...");
         List<GetVideosInfoApiRequest.Fields> invalidFields = request.validateFields();
         for (GetVideosInfoApiRequest.Fields field : invalidFields) {
-            Toast.makeText(ExampleActivity.this, "Field " + field.name() + ", with serializable name" + field.getFieldName() + " failed validation!", Toast.LENGTH_LONG).show();
+            Toast.makeText(ExampleActivity.this, "Field " + field.name() + ", with serializable name" + field.getFieldKey() + " failed validation!", Toast.LENGTH_LONG).show();
             switch (field) {
                 case category:
                     //handle case if category field failed validation.
