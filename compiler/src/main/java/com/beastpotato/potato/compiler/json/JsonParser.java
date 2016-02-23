@@ -33,7 +33,7 @@ public class JsonParser {
 
         @Override
         public boolean isIncludeAccessors() {
-            return true;
+            return false;
         }
 
         @Override
