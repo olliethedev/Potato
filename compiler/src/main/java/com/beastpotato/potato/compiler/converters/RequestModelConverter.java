@@ -78,7 +78,7 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
                     .build();
 
             superTypeSpec = TypeSpec.classBuilder("RequestBase")
-                    .addModifiers(Modifier.ABSTRACT)
+                    .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
                     .addTypeVariable(TypeVariableName.get("T"))
                     .addType(fieldDefInterfaceSpec)
                     .addField(requestQueue)
