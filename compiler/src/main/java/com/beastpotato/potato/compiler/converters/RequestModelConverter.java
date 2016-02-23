@@ -11,6 +11,7 @@ import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.TypeVariableName;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,12 +60,32 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
                     .addModifiers(Modifier.PUBLIC)
                     .addStatement("return this.requestQueue")
                     .build();
+            ClassName completionType = ClassName.get("com.beastpotato.potato.api.net.ApiRequest", "RequestCompletion");
+            ParameterizedTypeName parameterizedCompletionParam = ParameterizedTypeName.get(completionType, TypeVariableName.get("T"));
+            ParameterSpec completionParam = ParameterSpec.builder(parameterizedCompletionParam, "completion")
+                    .addModifiers(Modifier.FINAL)
+                    .build();
+            MethodSpec sendMethod = MethodSpec.methodBuilder("send")
+                    .addParameter(completionParam)
+                    .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                    .build();
+            TypeSpec fieldDefInterfaceSpec = TypeSpec.interfaceBuilder("FieldsDef")
+                    .addModifiers(Modifier.PUBLIC)
+                    .addMethod(MethodSpec.methodBuilder("getFieldKey")
+                            .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                            .returns(String.class)
+                            .build())
+                    .build();
+
             superTypeSpec = TypeSpec.classBuilder("RequestBase")
                     .addModifiers(Modifier.ABSTRACT)
+                    .addTypeVariable(TypeVariableName.get("T"))
+                    .addType(fieldDefInterfaceSpec)
                     .addField(requestQueue)
                     .addField(context)
                     .addMethod(getRequestQueue)
                     .addMethod(constructor)
+                    .addMethod(sendMethod)
                     .build();
         }
         return superTypeSpec;
@@ -76,6 +97,7 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
         try {
             List<TypeSpec> typeSpecs = new ArrayList<>();
             TypeSpec requestSuper = getRequestSuperClass();
+            ClassName superClassName = ClassName.get(getElementUtils().getPackageOf(model.getTypeElement()).getQualifiedName().toString(), requestSuper.name);
             TypeSpec.Builder classBuilder = TypeSpec.classBuilder(model.getModelName() + "ApiRequest")
                     .addModifiers(Modifier.PUBLIC)
                     .addType(makeFieldsEnum(model))
@@ -86,7 +108,7 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
                     .addMethod(makeValidationMethodSpec(model))
                     .addMethod(makeSendMethod(model))
                     .addMethod(makeGetFullUrlMethod(model))
-                    .superclass(ClassName.get(getElementUtils().getPackageOf(model.getTypeElement()).getQualifiedName().toString(), requestSuper.name));
+                    .superclass(ParameterizedTypeName.get(superClassName, ClassName.get(model.getResponsePackageName(), model.getResponseClassName())));
             for (RequestModel.RequestModelFieldDef fieldDef : model.getAllFields()) {
                 FieldSpec fs = convertFieldDef(fieldDef);
                 classBuilder.addField(fs);
@@ -98,7 +120,8 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
             getLogger().log(this, Diagnostic.Kind.NOTE, "Converting Endpoint annotation data model to java object done.");
             return typeSpecs;
         } catch (Exception e) {
-            throw new ConversionException(String.format("Could not convert %1s to TypeSpec", model.getClass().getSimpleName()));
+            e.printStackTrace();
+            throw new ConversionException(String.format("Could not convert %1s to TypeSpec because %2s", model.getClass().getSimpleName(), e.getMessage()));
         }
     }
 
@@ -215,6 +238,7 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
                 .addParameter(completionParam)
                 .addCode(sendLogicBlock.build())
                 .addModifiers(Modifier.PUBLIC)
+                .addAnnotation(Override.class)
                 .build();
     }
 
@@ -233,9 +257,16 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
         TypeSpec.Builder fieldsEnumSpecBuilder = TypeSpec.enumBuilder("Fields")
                 .addModifiers(Modifier.PUBLIC)
                 .addField(String.class, "fieldStr", Modifier.PRIVATE, Modifier.FINAL)
+                .addSuperinterface(ClassName.get(model.getPackageName() + ".RequestBase", "FieldsDef"))
                 .addMethod(MethodSpec.constructorBuilder()
                         .addParameter(String.class, "fieldStr")
                         .addStatement("this.$N = $N", "fieldStr", "fieldStr")
+                        .build())
+                .addMethod(MethodSpec.methodBuilder("getFieldKey")
+                        .returns(String.class)
+                        .addAnnotation(Override.class)
+                        .addModifiers(Modifier.PUBLIC)
+                        .addStatement("return this.fieldStr")
                         .build());
         for (RequestModel.RequestModelFieldDef fieldDef : model.getAllFields()) {
             fieldsEnumSpecBuilder.addEnumConstant(fieldDef.fieldName, TypeSpec.anonymousClassBuilder("$S", fieldDef.fieldSerializableName)
@@ -248,7 +279,7 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
 
     private MethodSpec makeValidationMethodSpec(RequestModel model) {
         ClassName returnType = ClassName.get("java.util", "List");
-        ClassName listTypeVariableName = ClassName.bestGuess("Fields");
+        ClassName listTypeVariableName = ClassName.get(model.getPackageName() + "." + model.getModelName() + "ApiRequest", "Fields");
         ParameterizedTypeName parameterizedCompletionParam = ParameterizedTypeName.get(returnType, listTypeVariableName);
         MethodSpec.Builder validationMethodSpecBuilder = MethodSpec.methodBuilder("validateFields")
                 .addModifiers(Modifier.PUBLIC)
