@@ -1,23 +1,17 @@
 package com.beastpotato.potato.compiler.json;
 
 import com.beastpotato.potato.compiler.plugin.ProcessorLogger;
-import com.sun.codemodel.CodeWriter;
 import com.sun.codemodel.JCodeModel;
-import com.sun.codemodel.writer.SingleStreamCodeWriter;
 
 import org.jsonschema2pojo.AnnotationStyle;
 import org.jsonschema2pojo.DefaultGenerationConfig;
 import org.jsonschema2pojo.GenerationConfig;
 import org.jsonschema2pojo.GsonAnnotator;
-import org.jsonschema2pojo.Jackson2Annotator;
 import org.jsonschema2pojo.SchemaGenerator;
 import org.jsonschema2pojo.SchemaMapper;
 import org.jsonschema2pojo.SchemaStore;
 import org.jsonschema2pojo.SourceType;
 import org.jsonschema2pojo.rules.RuleFactory;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 
 import javax.tools.Diagnostic;
 
@@ -89,7 +83,7 @@ public class JsonParser {
 
         @Override
         public boolean isParcelable() {
-            return false;
+            return true;
         }
 
         @Override
@@ -119,23 +113,6 @@ public class JsonParser {
 
 
     };
-
-    public static String parseJsonToClassSource(String packageName, String className, String jsonStr, ProcessorLogger messager) throws JsonParserException {
-        messager.log(JsonParser.class, Diagnostic.Kind.NOTE, "parsing JSON to classSource...");
-        JCodeModel codeModel = new JCodeModel();
-        SchemaMapper mapper = new SchemaMapper(new RuleFactory(config, new Jackson2Annotator(), new SchemaStore()), new SchemaGenerator());
-        try {
-            mapper.generate(codeModel, className, packageName, jsonStr);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            CodeWriter codeWriter = new SingleStreamCodeWriter(baos);
-            codeModel.build(codeWriter);
-            messager.log(JsonParser.class, Diagnostic.Kind.NOTE, "parsing JSON done.");
-            return baos.toString();
-        } catch (IOException e) {
-            throw new JsonParserException("JsonParser failed:" + e.getMessage(), e.getCause());
-        }
-
-    }
 
     public static JCodeModel parseJsonToModel(String packageName, String className, String jsonStr, ProcessorLogger messager) throws JsonParserException {
         messager.log(JsonParser.class, Diagnostic.Kind.NOTE, "parsing JSON to JCodeModel...");
