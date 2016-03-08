@@ -1,5 +1,6 @@
 package com.beastpotato.potato.compiler.plugin;
 
+import com.beastpotato.potato.api.Body;
 import com.beastpotato.potato.api.Endpoint;
 import com.beastpotato.potato.api.HeaderParam;
 import com.beastpotato.potato.api.UrlParam;
@@ -50,6 +51,7 @@ public class EndpointPlugIn extends BasePlugIn {
         annotations.add(UrlParam.class.getCanonicalName());
         annotations.add(HeaderParam.class.getCanonicalName());
         annotations.add(Validation.class.getCanonicalName());
+        annotations.add(Body.class.getCanonicalName());
         return annotations;
     }
 

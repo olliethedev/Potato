@@ -18,6 +18,7 @@ public class ApiRequest<T> extends com.android.volley.Request<T> {
     private final Class<T> clazz;
     private final Map<String, String> headers;
     private final RequestCompletion<T> listener;
+    private String body;
 
     public ApiRequest(int method, String url, Class<T> clazz, final RequestCompletion<T> completionListener) {
         super(method, url, new Response.ErrorListener() {
@@ -55,6 +56,22 @@ public class ApiRequest<T> extends com.android.volley.Request<T> {
         } catch (JsonSyntaxException e) {
             return Response.error(new ParseError(e));
         }
+    }
+
+    @Override
+    public byte[] getBody() throws AuthFailureError {
+        if (body != null) {
+            try {
+                return body.getBytes("utf-8");
+            } catch (Exception e) {
+                return super.getBody();
+            }
+        }
+        return super.getBody();
+    }
+
+    public void setBody(String body) {
+        this.body = body;
     }
 
     public void addHeader(String key, String value) {

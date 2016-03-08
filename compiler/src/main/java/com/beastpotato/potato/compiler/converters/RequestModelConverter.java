@@ -240,8 +240,13 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
 
         CodeBlock.Builder sendLogicBlock = CodeBlock.builder()
                 .addStatement("com.beastpotato.potato.api.net.ApiRequest<" + model.getResponseClassName() + "> request = new com.beastpotato.potato.api.net.ApiRequest<>(this.httpMethod, getFullUrl(), " + model.getResponseClassName() + ".class, completion)")
-                .add(headersBlock.build())
-                .addStatement("getRequestQueue().add(request)");
+                .add(headersBlock.build());
+
+        if (model.getBodyField() != null) {
+            sendLogicBlock.add(ifNotNull(model.getBodyField(), " request.setBody(this.body)"));
+        }
+
+        sendLogicBlock.addStatement("getRequestQueue().add(request)");
 
         return MethodSpec.methodBuilder("send")
                 .addParameter(completionParam)

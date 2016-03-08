@@ -14,6 +14,7 @@ import javax.lang.model.type.TypeMirror;
 public class RequestModel {
     private TypeElement typeElement;
     private List<RequestModelFieldDef> urlPathParamFields, urlParamFields, headerParamFields;
+    private RequestModelFieldDef bodyField;
     private String relativeUrl;
     private Constants.Http method;
     private String exampleJson;
@@ -41,6 +42,9 @@ public class RequestModel {
             case HeaderParam:
                 headerParamFields.add(new RequestModelFieldDef(fieldType, fieldSerializaleName, fieldName, fieldClassType));
                 break;
+            case Body:
+                bodyField = new RequestModelFieldDef(fieldType, fieldSerializaleName, fieldName, fieldClassType);
+                break;
         }
     }
 
@@ -49,6 +53,8 @@ public class RequestModel {
         out.addAll(urlPathParamFields);
         out.addAll(urlParamFields);
         out.addAll(headerParamFields);
+        if (bodyField != null)
+            out.add(bodyField);
         return out;
     }
 
@@ -120,7 +126,11 @@ public class RequestModel {
         this.exampleJson = exampleJson;
     }
 
-    public enum FieldType {UrlPathParam, UrlParam, HeaderParam}
+    public RequestModelFieldDef getBodyField() {
+        return bodyField;
+    }
+
+    public enum FieldType {UrlPathParam, UrlParam, HeaderParam, Body}
 
     public class RequestModelFieldDef {
         public FieldType fieldType;

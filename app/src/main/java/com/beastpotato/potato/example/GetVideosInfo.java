@@ -1,5 +1,6 @@
 package com.beastpotato.potato.example;
 
+import com.beastpotato.potato.api.Body;
 import com.beastpotato.potato.api.Constants;
 import com.beastpotato.potato.api.Endpoint;
 import com.beastpotato.potato.api.HeaderParam;
@@ -341,97 +342,6 @@ import com.beastpotato.potato.api.UrlPathParam;
                         "                     \"likeId\":1309030383874084864\n" +
                         "                  },\n" +
                         "                  {\n" +
-                        "                     \"username\":\"luhGrizzo525\",\n" +
-                        "                     \"verified\":0,\n" +
-                        "                     \"vanityUrls\":[\n" +
-                        "\n" +
-                        "                     ],\n" +
-                        "                     \"created\":\"2016-02-10T02:29:41.000000\",\n" +
-                        "                     \"userId\":1115498235201531904,\n" +
-                        "                     \"user\":{\n" +
-                        "                        \"private\":0\n" +
-                        "                     },\n" +
-                        "                     \"likeId\":1309030397719797760\n" +
-                        "                  },\n" +
-                        "                  {\n" +
-                        "                     \"username\":\"(br)avery\",\n" +
-                        "                     \"verified\":0,\n" +
-                        "                     \"vanityUrls\":[\n" +
-                        "\n" +
-                        "                     ],\n" +
-                        "                     \"created\":\"2016-02-10T02:29:47.000000\",\n" +
-                        "                     \"userId\":971296519414345728,\n" +
-                        "                     \"user\":{\n" +
-                        "                        \"private\":0\n" +
-                        "                     },\n" +
-                        "                     \"likeId\":1309030421576765440\n" +
-                        "                  },\n" +
-                        "                  {\n" +
-                        "                     \"username\":\"Maha Muhammad\",\n" +
-                        "                     \"verified\":0,\n" +
-                        "                     \"vanityUrls\":[\n" +
-                        "\n" +
-                        "                     ],\n" +
-                        "                     \"created\":\"2016-02-10T02:29:52.000000\",\n" +
-                        "                     \"userId\":1090800836285722624,\n" +
-                        "                     \"user\":{\n" +
-                        "                        \"private\":0\n" +
-                        "                     },\n" +
-                        "                     \"likeId\":1309030443320020992\n" +
-                        "                  },\n" +
-                        "                  {\n" +
-                        "                     \"username\":\"WarDrake\",\n" +
-                        "                     \"verified\":0,\n" +
-                        "                     \"vanityUrls\":[\n" +
-                        "\n" +
-                        "                     ],\n" +
-                        "                     \"created\":\"2016-02-10T02:29:55.000000\",\n" +
-                        "                     \"userId\":1217667713359556608,\n" +
-                        "                     \"user\":{\n" +
-                        "                        \"private\":0\n" +
-                        "                     },\n" +
-                        "                     \"likeId\":1309030456515264512\n" +
-                        "                  },\n" +
-                        "                  {\n" +
-                        "                     \"username\":\"kenn\",\n" +
-                        "                     \"verified\":0,\n" +
-                        "                     \"vanityUrls\":[\n" +
-                        "\n" +
-                        "                     ],\n" +
-                        "                     \"created\":\"2016-02-10T02:29:58.000000\",\n" +
-                        "                     \"userId\":1301398620460978176,\n" +
-                        "                     \"user\":{\n" +
-                        "                        \"private\":0\n" +
-                        "                     },\n" +
-                        "                     \"likeId\":1309030471321133056\n" +
-                        "                  },\n" +
-                        "                  {\n" +
-                        "                     \"username\":\"Jeremy Galagher\",\n" +
-                        "                     \"verified\":0,\n" +
-                        "                     \"vanityUrls\":[\n" +
-                        "\n" +
-                        "                     ],\n" +
-                        "                     \"created\":\"2016-02-10T02:29:59.000000\",\n" +
-                        "                     \"userId\":964309875528204288,\n" +
-                        "                     \"user\":{\n" +
-                        "                        \"private\":0\n" +
-                        "                     },\n" +
-                        "                     \"likeId\":1309030475243094016\n" +
-                        "                  },\n" +
-                        "                  {\n" +
-                        "                     \"username\":\"Valley Gurl\",\n" +
-                        "                     \"verified\":0,\n" +
-                        "                     \"vanityUrls\":[\n" +
-                        "\n" +
-                        "                     ],\n" +
-                        "                     \"created\":\"2016-02-10T02:30:02.000000\",\n" +
-                        "                     \"userId\":1227503604270100480,\n" +
-                        "                     \"user\":{\n" +
-                        "                        \"private\":0\n" +
-                        "                     },\n" +
-                        "                     \"likeId\":1309030488098611200\n" +
-                        "                  },\n" +
-                        "                  {\n" +
                         "                     \"username\":\"'Nya\",\n" +
                         "                     \"verified\":0,\n" +
                         "                     \"vanityUrls\":[\n" +
@@ -447,7 +357,7 @@ import com.beastpotato.potato.api.UrlPathParam;
                         "               ],\n" +
                         "               \"previousPage\":null,\n" +
                         "               \"backAnchor\":\"\",\n" +
-                        "               \"anchor\":1309030364458754044,\n" +
+                        "               \"anchor\":1309030364458754043,\n" +
                         "               \"nextPage\":2,\n" +
                         "               \"size\":10\n" +
                         "            }\n" +
@@ -471,4 +381,6 @@ public abstract class GetVideosInfo {
     String apiKey;
     @HeaderParam("Accept")
     String contentType;
+    @Body
+    String body;
 }

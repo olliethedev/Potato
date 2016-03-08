@@ -1,5 +1,6 @@
 package com.beastpotato.potato.compiler.generators;
 
+import com.beastpotato.potato.api.Body;
 import com.beastpotato.potato.api.Constants;
 import com.beastpotato.potato.api.Endpoint;
 import com.beastpotato.potato.api.HeaderParam;
@@ -76,6 +77,8 @@ public class RequestModelGenerator extends BaseGenerator<RequestModel> {
                 addUrlParam((VariableElement) element);
             } else if (isVariableElementAnnotated(element, HeaderParam.class)) {
                 addHeaderParam((VariableElement) element);
+            } else if (isVariableElementAnnotated(element, Body.class)) {
+                setBody((VariableElement) element);
             }
         }
         log(Diagnostic.Kind.NOTE, "initialization done.");
@@ -94,6 +97,8 @@ public class RequestModelGenerator extends BaseGenerator<RequestModel> {
             parseUrlParams(urlParams, requestModel);
             log(Diagnostic.Kind.NOTE, String.format("Generating headerParams"));
             parseHeaderParams(headerParams, requestModel);
+            log(Diagnostic.Kind.NOTE, String.format("Generating body"));
+            parseBody(body, requestModel);
             log(Diagnostic.Kind.NOTE, "model generated...");
             return requestModel;
         } catch (Exception e) {
@@ -134,5 +139,11 @@ public class RequestModelGenerator extends BaseGenerator<RequestModel> {
             String paramKey = annotation.value();
             requestModel.addField(RequestModel.FieldType.HeaderParam, paramKey, varElement.getSimpleName().toString(), varElement.asType());
         }
+    }
+
+    private void parseBody(VariableElement body, RequestModel requestModel) {
+        if (body == null) return;
+        String paramKey = "body";
+        requestModel.addField(RequestModel.FieldType.Body, paramKey, body.getSimpleName().toString(), body.asType());
     }
 }
