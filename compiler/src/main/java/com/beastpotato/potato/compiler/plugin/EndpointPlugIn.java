@@ -9,22 +9,27 @@ import com.beastpotato.potato.api.Validation;
 import com.beastpotato.potato.compiler.converters.BaseModelConverter;
 import com.beastpotato.potato.compiler.converters.RequestModelConverter;
 import com.beastpotato.potato.compiler.generators.BaseGenerator;
+import com.beastpotato.potato.compiler.generators.GeneratedModelGenerator;
 import com.beastpotato.potato.compiler.generators.RequestModelGenerator;
 import com.beastpotato.potato.compiler.generators.ValidatorModelGenerator;
 import com.beastpotato.potato.compiler.json.JsonCodeWriter;
 import com.beastpotato.potato.compiler.json.JsonParser;
+import com.beastpotato.potato.compiler.models.GeneratedModel;
 import com.beastpotato.potato.compiler.models.RequestModel;
 import com.beastpotato.potato.compiler.models.ValidatorModel;
+import com.google.gson.annotations.SerializedName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import com.sun.codemodel.JCodeModel;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Generated;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
@@ -52,12 +57,43 @@ public class EndpointPlugIn extends BasePlugIn {
         annotations.add(HeaderParam.class.getCanonicalName());
         annotations.add(Validation.class.getCanonicalName());
         annotations.add(Body.class.getCanonicalName());
+        annotations.add(Generated.class.getCanonicalName());
+        annotations.add(SerializedName.class.getCanonicalName());
         return annotations;
     }
 
     @Override
     public void process(Set annotations, RoundEnvironment roundEnv) {
         log(Diagnostic.Kind.NOTE, "Starting annotation processing");
+        List<GeneratedModel> generatedModels = new ArrayList<>();
+
+        for (Element annotatedElement : roundEnv.getElementsAnnotatedWith(Generated.class)) {
+            if (annotatedElement.getKind() != ElementKind.CLASS && !annotatedElement.getAnnotation(Generated.class).value().equals("org.jsonschema2pojo")) {
+                log(Diagnostic.Kind.ERROR, String.format("Only Classes can be annotated with @%1s(\"org.jsonschema2pojo\") annotation", Generated.class.getSimpleName()));
+            } else {
+                GeneratedModelGenerator generatedModelGenerator = new GeneratedModelGenerator((TypeElement) annotatedElement, getLogger());
+                try {
+                    generatedModelGenerator.initialize();
+                    generatedModels.add(generatedModelGenerator.generate());
+                    List<List<GeneratedModel>> matches = PlugInUtils.findMatchingGroups(generatedModels);
+                    log(Diagnostic.Kind.NOTE, String.format("Found %1s groups.", matches.size()));
+                    for (List<GeneratedModel> group : matches) {
+                        log(Diagnostic.Kind.NOTE, String.format("Can group %1s generated objects.", group.size()));
+                        for (GeneratedModel item : group) {
+                            log(Diagnostic.Kind.NOTE, item.getClassElement().getSimpleName().toString());
+                        }
+                    }
+                    //todo:create one class to be used for each matched group, and updated response objects
+                } catch (BaseGenerator.InitializationException e) {
+                    log(Diagnostic.Kind.ERROR, String.format("Failed to initialize %1s due to %2s", RequestModelGenerator.class.getSimpleName(), e.getMessage()));
+                    e.printStackTrace();
+                } catch (BaseGenerator.GenerationException e) {
+                    log(Diagnostic.Kind.ERROR, String.format("Code generator %1s failed due to %2s", RequestModelGenerator.class.getSimpleName(), e.getMessage()));
+                    e.printStackTrace();
+                }
+
+            }
+        }
         HashMap<String, ValidatorModel> validatorModelHashMap = new HashMap<>();
         for (Element annotatedElement : roundEnv.getElementsAnnotatedWith(Validation.class)) {
             if (annotatedElement.getKind() != ElementKind.METHOD) {
