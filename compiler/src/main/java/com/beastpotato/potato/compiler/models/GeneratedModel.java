@@ -3,6 +3,7 @@ package com.beastpotato.potato.compiler.models;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
@@ -11,6 +12,7 @@ import javax.lang.model.type.TypeMirror;
  */
 public class GeneratedModel {
     private TypeElement classElement;
+    private String packageName;
     private List<String> serializedNames = new ArrayList<>();
     private List<ModelFieldDef> fields = new ArrayList<>();
 
@@ -42,8 +44,16 @@ public class GeneratedModel {
         return fields;
     }
 
-    public void addField(String fieldSerializaleName, String fieldName, TypeMirror fieldClassType) {
+    public void addField(PackageElement packageElement, String fieldSerializaleName, String fieldName, TypeMirror fieldClassType) {
         this.serializedNames.add(fieldSerializaleName);
-        fields.add(new ModelFieldDef(fieldSerializaleName, fieldName, fieldClassType));
+        fields.add(new ModelFieldDef(packageElement, fieldSerializaleName, fieldName, fieldClassType));
+    }
+
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
     }
 }

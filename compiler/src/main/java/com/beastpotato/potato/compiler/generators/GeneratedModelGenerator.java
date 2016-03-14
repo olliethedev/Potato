@@ -12,18 +12,21 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic;
 
 /**
  * Created by Oleksiy on 3/7/2016.
  */
 public class GeneratedModelGenerator extends BaseGenerator<GeneratedModel> {
+    private final Elements elementUtils;
     private TypeElement classElement;
     private List<VariableElement> serializedNameFields = new ArrayList<>();
 
-    public GeneratedModelGenerator(TypeElement classElement, ProcessorLogger logger) {
+    public GeneratedModelGenerator(TypeElement classElement, ProcessorLogger logger, Elements elementUtils) {
         super(logger);
         this.classElement = classElement;
+        this.elementUtils = elementUtils;
     }
 
     @Override
@@ -48,8 +51,10 @@ public class GeneratedModelGenerator extends BaseGenerator<GeneratedModel> {
             log(Diagnostic.Kind.NOTE, "generating model...");
             GeneratedModel model = new GeneratedModel(classElement);
             for (VariableElement variableElement : serializedNameFields) {
-                model.addField(variableElement.getAnnotation(SerializedName.class).value(), variableElement.getSimpleName().toString(), variableElement.asType());
+                model.addField(elementUtils.getPackageOf(variableElement), variableElement.getAnnotation(SerializedName.class).value(), variableElement.getSimpleName().toString(), variableElement.asType());
             }
+            String packageName = elementUtils.getPackageOf(classElement).toString();
+            model.setPackageName(packageName);
             log(Diagnostic.Kind.NOTE, "model generated...");
             return model;
         } catch (Exception e) {

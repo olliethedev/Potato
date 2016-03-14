@@ -1,5 +1,6 @@
 package com.beastpotato.potato.compiler.models;
 
+import javax.lang.model.element.PackageElement;
 import javax.lang.model.type.TypeMirror;
 
 /**
@@ -10,9 +11,17 @@ public class ModelFieldDef {
     public String fieldSerializableName;
     public String fieldName;
     public TypeMirror fieldClassType;
+    public PackageElement packageElement;
 
     public ModelFieldDef(FieldType fieldType, String fieldSerializableName, String fieldName, TypeMirror fieldClassType) {
         this.fieldType = fieldType;
+        this.fieldSerializableName = fieldSerializableName;
+        this.fieldName = fieldName;
+        this.fieldClassType = fieldClassType;
+    }
+
+    public ModelFieldDef(PackageElement packageElement, String fieldSerializableName, String fieldName, TypeMirror fieldClassType) {
+        this.packageElement = packageElement;
         this.fieldSerializableName = fieldSerializableName;
         this.fieldName = fieldName;
         this.fieldClassType = fieldClassType;

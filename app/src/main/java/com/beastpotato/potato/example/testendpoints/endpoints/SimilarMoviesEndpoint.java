@@ -17,11 +17,12 @@ import com.beastpotato.potato.api.UrlPathParam;
         "      \"backdrop_path\": \"/vmpyNlphrzFlsiG8XcnaGeQ93WW.jpg\",\n" +
         "      \"id\": 159,\n" +
         "      \"original_title\": \"Der Bewegte Mann\",\n" +
+        "      \"overview\": \"Ex-government operative Bryan Mills finds his life is shattered when he's falsely accused of a murder that hits close to home. As he's pursued by a savvy police inspector, Mills employs his particular set of skills to track the real killer and exact his unique brand of justice.\",\n" +
         "      \"release_date\": \"1994-10-05\",\n" +
         "      \"poster_path\": \"/7UEzKYus31qTtyGDftRhao7kxbb.jpg\",\n" +
         "      \"popularity\": 0.64515,\n" +
         "      \"title\": \"Maybe... Maybe Not\",\n" +
-        "      \"vote_average\": 6,\n" +
+        "      \"vote_average\": 6.2,\n" +
         "      \"vote_count\": 1\n" +
         "    }\n" +
         "  ],\n" +
