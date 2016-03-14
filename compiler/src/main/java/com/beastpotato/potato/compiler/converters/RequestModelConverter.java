@@ -1,5 +1,6 @@
 package com.beastpotato.potato.compiler.converters;
 
+import com.beastpotato.potato.compiler.models.ModelFieldDef;
 import com.beastpotato.potato.compiler.models.RequestModel;
 import com.beastpotato.potato.compiler.models.ValidatorModel;
 import com.beastpotato.potato.compiler.plugin.ProcessorLogger;
@@ -51,6 +52,7 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
                     .endControlFlow()
                     .build();
             MethodSpec constructor = MethodSpec.constructorBuilder()
+                    .addModifiers(Modifier.PUBLIC)
                     .addParameter(contextClass, "context")
                     .addStatement("this.context = context")
                     .addCode(constructorBlock)
@@ -117,8 +119,8 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
                     .addMethod(makeValidationMethodSpec(model))
                     .addMethod(makeSendMethod(model))
                     .addMethod(makeGetFullUrlMethod(model))
-                    .superclass(ParameterizedTypeName.get(superClassName, ClassName.get(model.getResponsePackageName(), model.getResponseClassName())));
-            for (RequestModel.RequestModelFieldDef fieldDef : model.getAllFields()) {
+                    .superclass(ParameterizedTypeName.get(ClassName.get(model.getPackageName(), "RequestBase"), ClassName.get(model.getResponsePackageName(), model.getResponseClassName())));
+            for (ModelFieldDef fieldDef : model.getAllFields()) {
                 FieldSpec fs = convertFieldDef(fieldDef);
                 classBuilder.addField(fs);
                 classBuilder.addMethod(makeGetter(fs));
@@ -159,7 +161,7 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
                 .build();
     }
 
-    private FieldSpec convertFieldDef(RequestModel.RequestModelFieldDef fieldDef) {
+    private FieldSpec convertFieldDef(ModelFieldDef fieldDef) {
         return FieldSpec.builder(TypeName.get(fieldDef.fieldClassType), fieldDef.fieldName)
                 .addModifiers(Modifier.PRIVATE)
                 .build();
@@ -187,7 +189,7 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
         fullUrlBlock.addStatement("fullUrl += this." + "relativeUrl");
 
         CodeBlock.Builder urlPathParamReplaceBlock = CodeBlock.builder();
-        for (RequestModel.RequestModelFieldDef fieldDef : model.getUrlPathParamFields()) {
+        for (ModelFieldDef fieldDef : model.getUrlPathParamFields()) {
             String statementStr = "fullUrl = fullUrl.replace(\"{" + fieldDef.fieldSerializableName + "}\",this." + fieldDef.fieldName + ")";
             fullUrlBlock.add(ifNotNull(fieldDef, statementStr));
         }
@@ -195,7 +197,7 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
         CodeBlock.Builder urlParamsBlock = CodeBlock.builder();
         urlParamsBlock.beginControlFlow("try");
         int i = 0;
-        for (RequestModel.RequestModelFieldDef fieldDef : model.getUrlParamFields()) {
+        for (ModelFieldDef fieldDef : model.getUrlParamFields()) {
             if (i == 0) {
                 urlParamsBlock.addStatement("fullUrl += \"?\"");
             }
@@ -233,15 +235,20 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
                 .build();
 
         CodeBlock.Builder headersBlock = CodeBlock.builder();
-        for (RequestModel.RequestModelFieldDef fieldDef : model.getHeaderParamFields()) {
+        for (ModelFieldDef fieldDef : model.getHeaderParamFields()) {
             String statementStr = "request.addHeader(\"" + fieldDef.fieldSerializableName + "\",this." + fieldDef.fieldName + ")";
             headersBlock.add(ifNotNull(fieldDef, statementStr));
         }
 
         CodeBlock.Builder sendLogicBlock = CodeBlock.builder()
                 .addStatement("com.beastpotato.potato.api.net.ApiRequest<" + model.getResponseClassName() + "> request = new com.beastpotato.potato.api.net.ApiRequest<>(this.httpMethod, getFullUrl(), " + model.getResponseClassName() + ".class, completion)")
-                .add(headersBlock.build())
-                .addStatement("getRequestQueue().add(request)");
+                .add(headersBlock.build());
+
+        if (model.getBodyField() != null) {
+            sendLogicBlock.add(ifNotNull(model.getBodyField(), " request.setBody(this.body)"));
+        }
+
+        sendLogicBlock.addStatement("getRequestQueue().add(request)");
 
         return MethodSpec.methodBuilder("send")
                 .addParameter(completionParam)
@@ -251,11 +258,11 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
                 .build();
     }
 
-    private String validatorModelToMethodCall(ValidatorModel validatorModel, RequestModel.RequestModelFieldDef fieldDef) {
+    private String validatorModelToMethodCall(ValidatorModel validatorModel, ModelFieldDef fieldDef) {
         return validatorModel.getPackageName() + "." + validatorModel.getMethodName() + "(" + "this." + fieldDef.fieldName + ")";
     }
 
-    private CodeBlock makeValidationBlock(ValidatorModel validatorModel, RequestModel.RequestModelFieldDef fieldDef, String statementStr) {
+    private CodeBlock makeValidationBlock(ValidatorModel validatorModel, ModelFieldDef fieldDef, String statementStr) {
         return CodeBlock.builder().beginControlFlow("if(!" + validatorModelToMethodCall(validatorModel, fieldDef) + ")")
                 .addStatement(statementStr)
                 .endControlFlow()
@@ -277,7 +284,7 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
                         .addModifiers(Modifier.PUBLIC)
                         .addStatement("return this.fieldStr")
                         .build());
-        for (RequestModel.RequestModelFieldDef fieldDef : model.getAllFields()) {
+        for (ModelFieldDef fieldDef : model.getAllFields()) {
             fieldsEnumSpecBuilder.addEnumConstant(fieldDef.fieldName, TypeSpec.anonymousClassBuilder("$S", fieldDef.fieldSerializableName)
                     .build());
         }
@@ -288,14 +295,14 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
 
     private MethodSpec makeValidationMethodSpec(RequestModel model) {
         ClassName returnType = ClassName.get("java.util", "List");
-        ClassName listTypeVariableName = ClassName.get(model.getPackageName() + "." + model.getModelName() + "ApiRequest", "Fields");
+        ClassName listTypeVariableName = ClassName.bestGuess("Fields");
         ParameterizedTypeName parameterizedCompletionParam = ParameterizedTypeName.get(returnType, listTypeVariableName);
         MethodSpec.Builder validationMethodSpecBuilder = MethodSpec.methodBuilder("validateFields")
                 .addModifiers(Modifier.PUBLIC)
                 .returns(parameterizedCompletionParam)
                 .addAnnotation(Override.class)
                 .addStatement("java.util.List<Fields> fieldsFailedValidation = new java.util.ArrayList<Fields>()");
-        for (RequestModel.RequestModelFieldDef fieldDef : model.getAllFields()) {
+        for (ModelFieldDef fieldDef : model.getAllFields()) {
             if (validatorModelHashMap.containsKey(fieldDef.fieldSerializableName)) {
                 ValidatorModel validatorModel = validatorModelHashMap.get(fieldDef.fieldSerializableName);
                 validationMethodSpecBuilder.addCode(makeValidationBlock(validatorModel, fieldDef, "fieldsFailedValidation.add(Fields." + fieldDef.fieldName + ")"));
@@ -305,7 +312,7 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
         return validationMethodSpecBuilder.build();
     }
 
-    private CodeBlock ifNotNull(RequestModel.RequestModelFieldDef fieldDef, String statement) {
+    private CodeBlock ifNotNull(ModelFieldDef fieldDef, String statement) {
         return CodeBlock.builder().beginControlFlow("if(this." + fieldDef.fieldName + " != null)")
                 .addStatement(statement)
                 .endControlFlow()

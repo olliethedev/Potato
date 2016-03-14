@@ -12,14 +12,15 @@ import javax.lang.model.type.TypeMirror;
  * Created by Oleksiy on 2/6/2016.
  */
 public class RequestModel {
+    private static String packageName;
     private TypeElement typeElement;
-    private List<RequestModelFieldDef> urlPathParamFields, urlParamFields, headerParamFields;
+    private List<ModelFieldDef> urlPathParamFields, urlParamFields, headerParamFields;
+    private ModelFieldDef bodyField;
     private String relativeUrl;
     private Constants.Http method;
     private String exampleJson;
     private String modelName;
     private String responseClassName;
-    private String packageName;
     private String responsePackageName;
 
     public RequestModel(TypeElement typeElement) {
@@ -30,37 +31,42 @@ public class RequestModel {
         headerParamFields = new ArrayList<>();
     }
 
-    public void addField(FieldType fieldType, String fieldSerializaleName, String fieldName, TypeMirror fieldClassType) {
+    public void addField(ModelFieldDef.FieldType fieldType, String fieldSerializaleName, String fieldName, TypeMirror fieldClassType) {
         switch (fieldType) {
             case UrlPathParam:
-                urlPathParamFields.add(new RequestModelFieldDef(fieldType, fieldSerializaleName, fieldName, fieldClassType));
+                urlPathParamFields.add(new ModelFieldDef(fieldType, fieldSerializaleName, fieldName, fieldClassType));
                 break;
             case UrlParam:
-                urlParamFields.add(new RequestModelFieldDef(fieldType, fieldSerializaleName, fieldName, fieldClassType));
+                urlParamFields.add(new ModelFieldDef(fieldType, fieldSerializaleName, fieldName, fieldClassType));
                 break;
             case HeaderParam:
-                headerParamFields.add(new RequestModelFieldDef(fieldType, fieldSerializaleName, fieldName, fieldClassType));
+                headerParamFields.add(new ModelFieldDef(fieldType, fieldSerializaleName, fieldName, fieldClassType));
+                break;
+            case Body:
+                bodyField = new ModelFieldDef(fieldType, fieldSerializaleName, fieldName, fieldClassType);
                 break;
         }
     }
 
-    public List<RequestModelFieldDef> getAllFields() {
-        List<RequestModelFieldDef> out = new ArrayList<>();
+    public List<ModelFieldDef> getAllFields() {
+        List<ModelFieldDef> out = new ArrayList<>();
         out.addAll(urlPathParamFields);
         out.addAll(urlParamFields);
         out.addAll(headerParamFields);
+        if (bodyField != null)
+            out.add(bodyField);
         return out;
     }
 
-    public List<RequestModelFieldDef> getUrlPathParamFields() {
+    public List<ModelFieldDef> getUrlPathParamFields() {
         return urlPathParamFields;
     }
 
-    public List<RequestModelFieldDef> getUrlParamFields() {
+    public List<ModelFieldDef> getUrlParamFields() {
         return urlParamFields;
     }
 
-    public List<RequestModelFieldDef> getHeaderParamFields() {
+    public List<ModelFieldDef> getHeaderParamFields() {
         return headerParamFields;
     }
 
@@ -85,7 +91,8 @@ public class RequestModel {
     }
 
     public void setPackageName(String packageName) {
-        this.packageName = packageName;
+        if (RequestModel.packageName == null)
+            RequestModel.packageName = packageName;
     }
 
     public TypeElement getTypeElement() {
@@ -120,19 +127,7 @@ public class RequestModel {
         this.exampleJson = exampleJson;
     }
 
-    public enum FieldType {UrlPathParam, UrlParam, HeaderParam}
-
-    public class RequestModelFieldDef {
-        public FieldType fieldType;
-        public String fieldSerializableName;
-        public String fieldName;
-        public TypeMirror fieldClassType;
-
-        public RequestModelFieldDef(FieldType fieldType, String fieldSerializableName, String fieldName, TypeMirror fieldClassType) {
-            this.fieldType = fieldType;
-            this.fieldSerializableName = fieldSerializableName;
-            this.fieldName = fieldName;
-            this.fieldClassType = fieldClassType;
-        }
+    public ModelFieldDef getBodyField() {
+        return bodyField;
     }
 }
