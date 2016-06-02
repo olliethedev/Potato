@@ -27,8 +27,8 @@ This adds a dependency for **com.neenbedankt.gradle.plugins:android-apt** plug-i
 apply plugin: 'com.neenbedankt.android-apt'
 ...
 dependencies {
-    compile 'com.beastpotato.potato:potato_api:2.2'
-    apt 'com.beastpotato.potato:potato_compiler:2.2'
+    compile 'com.beastpotato.potato:potato_api:2.4'
+    apt 'com.beastpotato.potato:potato_compiler:2.4'
     compile 'org.glassfish.main:javax.annotation:4.0-b33'
     ...
 }
@@ -48,7 +48,7 @@ public abstract class DiscoverMovieEndpoint {
 ...
 }
   ```
-  2. In the endpoint definition class add fields that will be converted into Url Params, Url Path Params, and Header Params.
+  2. In the endpoint definition class add fields that will be converted into Url Params, Url Path Params, Header Params and body.
   
   ```java
     ...
@@ -66,6 +66,9 @@ public abstract class DiscoverMovieEndpoint {
 
     @HeaderParam("Content-Type")
     String contentType;
+    
+    @Body
+    String body;
     ...
     ```
     
