@@ -22,7 +22,7 @@ ext {
     groupId = 'com.beastpotato.potato'
     uploadName = 'Potato'
     description = 'Annotation processing to help with automatic java object generation from endpoint definition'
-    publishVersion = '2.4'
+    publishVersion = '2.5'
     website = 'https://github.com/beast-potato/Potato'
     licences = ['MIT']
 }
