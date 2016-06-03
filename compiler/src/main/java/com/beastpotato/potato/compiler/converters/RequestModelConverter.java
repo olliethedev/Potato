@@ -195,7 +195,7 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
         }
 
         CodeBlock.Builder urlParamsBlock = CodeBlock.builder();
-        if (model.getUrlPathParamFields().size() > 0) {
+        if (model.getUrlParamFields().size() > 0) {
             urlParamsBlock.beginControlFlow("try");
             int i = 0;
             for (ModelFieldDef fieldDef : model.getUrlParamFields()) {
