@@ -195,23 +195,24 @@ public class RequestModelConverter extends BaseModelConverter<TypeSpec, RequestM
         }
 
         CodeBlock.Builder urlParamsBlock = CodeBlock.builder();
-        urlParamsBlock.beginControlFlow("try");
-        int i = 0;
-        for (ModelFieldDef fieldDef : model.getUrlParamFields()) {
-            if (i == 0) {
-                urlParamsBlock.addStatement("fullUrl += \"?\"");
+        if (model.getUrlParamFields().size() > 0) {
+            urlParamsBlock.beginControlFlow("try");
+            int i = 0;
+            for (ModelFieldDef fieldDef : model.getUrlParamFields()) {
+                if (i == 0) {
+                    urlParamsBlock.addStatement("fullUrl += \"?\"");
+                }
+                String statementStr = "fullUrl += \"" + fieldDef.fieldSerializableName + "=\" + java.net.URLEncoder.encode(this." + fieldDef.fieldName + ".toString(),\"UTF-8\")";
+                urlParamsBlock.add(ifNotNull(fieldDef, statementStr));
+                if (i != model.getUrlParamFields().size() - 1) {
+                    urlParamsBlock.addStatement("fullUrl += \"&\"");
+                }
+                i++;
             }
-            String statementStr = "fullUrl += \"" + fieldDef.fieldSerializableName + "=\" + java.net.URLEncoder.encode(this." + fieldDef.fieldName + ".toString(),\"UTF-8\")";
-            urlParamsBlock.add(ifNotNull(fieldDef, statementStr));
-            if (i != model.getUrlParamFields().size() - 1) {
-                urlParamsBlock.addStatement("fullUrl += \"&\"");
-            }
-            i++;
+            urlParamsBlock.nextControlFlow("catch (java.io.UnsupportedEncodingException e)");
+            urlParamsBlock.addStatement("e.printStackTrace()");
+            urlParamsBlock.endControlFlow();
         }
-        urlParamsBlock.nextControlFlow("catch (java.io.UnsupportedEncodingException e)");
-        urlParamsBlock.addStatement("e.printStackTrace()");
-        urlParamsBlock.endControlFlow();
-
         CodeBlock.Builder sendLogicBlock = CodeBlock.builder()
                 .add(fullUrlBlock.build())
                 .add(urlPathParamReplaceBlock.build())
