@@ -156,3 +156,50 @@ This will generate **DiscoverMovieEndpointApiRequest** in app>build>generated>so
 ## 6. Profit.
 * Simple example project available in this repository. Go to the **app** module or click [HERE](https://github.com/beast-potato/Potato/tree/master/app).
 * Advanced example project available [HERE](https://github.com/beast-potato/Movie-Info-App). This project demonstrates use of Potato Library with Android Data Binding Library.
+
+#Other Annotations
+## 1. JsonToModel 
+- fields annotated with this annotation will be turned into POJO representation of jsonString value
+    ```java
+    ...
+    public class TestJsonStrings {
+    @JsonToModel(jsonString = "" +
+            "{\"employees\":[\n" +
+            "    {\"firstName\":\"John\", \"lastName\":\"Doe\"},\n" +
+            "    {\"firstName\":\"Anna\", \"lastName\":\"Smith\"},\n" +
+            "    {\"firstName\":\"Peter\", \"lastName\":\"Jones\"}\n" +
+            "]}")
+    public String EmployeesModel;
+
+    @JsonToModel(jsonString = "{\n" +
+            "  \"firstName\": \"John\",\n" +
+            "  \"lastName\": \"Smith\",\n" +
+            "  \"isAlive\": true,\n" +
+            "  \"age\": 25,\n" +
+            "  \"address\": {\n" +
+            "    \"streetAddress\": \"21 2nd Street\",\n" +
+            "    \"city\": \"New York\",\n" +
+            "    \"state\": \"NY\",\n" +
+            "    \"postalCode\": \"10021-3100\"\n" +
+            "  },\n" +
+            "  \"phoneNumbers\": [\n" +
+            "    {\n" +
+            "      \"type\": \"home\",\n" +
+            "      \"number\": \"212 555-1234\"\n" +
+            "    },\n" +
+            "    {\n" +
+            "      \"type\": \"office\",\n" +
+            "      \"number\": \"646 555-4567\"\n" +
+            "    },\n" +
+            "    {\n" +
+            "      \"type\": \"mobile\",\n" +
+            "      \"number\": \"123 456-7890\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            "  \"children\": [],\n" +
+            "  \"spouse\": null\n" +
+            "}")
+    public String PersonModel;
+    ```
+    will be tuned into 
+    ![alt tag](http://i64.tinypic.com/2hf1hk4.jpg)
