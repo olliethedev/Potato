@@ -2,6 +2,7 @@ package com.beastpotato.potato.compiler;
 
 import com.beastpotato.potato.compiler.plugin.BasePlugIn;
 import com.beastpotato.potato.compiler.plugin.EndpointPlugIn;
+import com.beastpotato.potato.compiler.plugin.JsonToModelPlugIn;
 import com.beastpotato.potato.compiler.plugin.ProcessorLogger;
 import com.google.auto.service.AutoService;
 
@@ -43,6 +44,7 @@ public class PotatoProcessor extends AbstractProcessor implements ProcessorLogge
 
         //add more plugins bellow
         add(EndpointPlugIn.class);
+        add(JsonToModelPlugIn.class);
     }
 
     private <T extends BasePlugIn> void add(Class<T> clazz) {

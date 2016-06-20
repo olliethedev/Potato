@@ -27,8 +27,8 @@ This adds a dependency for **com.neenbedankt.gradle.plugins:android-apt** plug-i
 apply plugin: 'com.neenbedankt.android-apt'
 ...
 dependencies {
-    compile 'com.beastpotato.potato:potato_api:2.5'
-    apt 'com.beastpotato.potato:potato_compiler:2.5'
+    compile 'com.beastpotato.potato:potato_api:2.7'
+    apt 'com.beastpotato.potato:potato_compiler:2.7'
     compile 'org.glassfish.main:javax.annotation:4.0-b33'
     ...
 }

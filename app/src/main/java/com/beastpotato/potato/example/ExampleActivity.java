@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.beastpotato.potato.api.net.ApiRequest;
+import com.beastpotato.potato.example.JsonStrings.personmodel.PersonModel;
 import com.beastpotato.potato.example.getvideosinforesponse.GetVideosInfoApiResponse;
 
 import java.util.List;
@@ -19,6 +20,12 @@ public class ExampleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_example);
         final TextView tv = (TextView) findViewById(R.id.text);
+
+        //Json string to model test
+        PersonModel personModel = new PersonModel();
+        personModel.firstName = "Oleksiy";
+        personModel.lastName = "Martynov";
+        personModel.age = 26L;
 
         //Network test
         GetVideosInfoApiRequest request = new GetVideosInfoApiRequest("https://community-vineapp.p.mashape.com", this);//Generated based on @Endpoint annotation in GetVideosInfo.java
