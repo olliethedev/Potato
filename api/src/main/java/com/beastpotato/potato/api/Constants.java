@@ -23,4 +23,8 @@ public class Constants {
             return this.numValue;
         }
     }
+
+    public enum ModelType {
+        GSON_COMPAT, GSON_AND_ORM_LITE_COMPAT
+    }
 }

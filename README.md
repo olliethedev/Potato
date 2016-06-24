@@ -27,9 +27,10 @@ This adds a dependency for **com.neenbedankt.gradle.plugins:android-apt** plug-i
 apply plugin: 'com.neenbedankt.android-apt'
 ...
 dependencies {
-    compile 'com.beastpotato.potato:potato_api:2.7'
-    apt 'com.beastpotato.potato:potato_compiler:2.7'
+    compile 'com.beastpotato.potato:potato_api:2.8'
+    apt 'com.beastpotato.potato:potato_compiler:2.8'
     compile 'org.glassfish.main:javax.annotation:4.0-b33'
+    compile 'com.j256.ormlite:ormlite-core:4.48'
     ...
 }
 ...
@@ -37,6 +38,7 @@ dependencies {
 * **com.beastpotato.potato:potato_api** is the library containing annotation deffinitions and other various utility classes used by genereated classes.
 * **com.beastpotato.potato:potato_compiler** is the annotation processor that converts annotated data into generated classes for you to use.
 * **org.glassfish.main:javax.annotation** is needed for the generated classes.
+* **com.j256.ormlite:ormlite-core:4.48** is needed ONLY if you are using the @JsonToModel with modelType = Constants.ModelType.GSON_AND_ORM_LITE_COMPAT.
 
 ## 3.Define endpoint
 We will define an endpoint for getting movie and tv show data in json format from the server.
@@ -203,3 +205,5 @@ This will generate **DiscoverMovieEndpointApiRequest** in app>build>generated>so
     ```
     will be tuned into 
     ![alt tag](http://i64.tinypic.com/2hf1hk4.jpg)
+
+    * use modelType = Constants.ModelType.GSON_AND_ORM_LITE_COMPAT if you want the generated model to be compatible with OrmLite database. Remember to include compile 'com.j256.ormlite:ormlite-core:4.48' in app module's build.gradle

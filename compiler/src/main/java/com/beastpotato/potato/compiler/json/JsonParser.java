@@ -127,6 +127,19 @@ public class JsonParser {
         }
     }
 
+    public static JCodeModel parseJsonToOrmLiteModel(String packageName, String className, String jsonStr, ProcessorLogger messager) throws JsonParserException {
+        messager.log(JsonParser.class, Diagnostic.Kind.NOTE, "parsing JSON to JCodeModel...");
+        JCodeModel codeModel = new JCodeModel();
+        SchemaMapper mapper = new SchemaMapper(new OrmLiteRuleFactory(config, new JsonModelOrmLiteAnnotator(messager), new SchemaStore()), new SchemaGenerator());
+        try {
+            mapper.generate(codeModel, className, packageName, jsonStr);
+            messager.log(JsonParser.class, Diagnostic.Kind.NOTE, "parsing JSON done.");
+            return codeModel;
+        } catch (Exception e) {
+            throw new JsonParserException("JsonParser failed:" + e.getMessage(), e.getCause());
+        }
+    }
+
     public static class JsonParserException extends Exception {
         public JsonParserException(String message, Throwable cause) {
             super(message, cause);
