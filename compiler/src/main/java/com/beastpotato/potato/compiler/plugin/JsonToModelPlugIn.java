@@ -1,5 +1,6 @@
 package com.beastpotato.potato.compiler.plugin;
 
+import com.beastpotato.potato.api.Constants;
 import com.beastpotato.potato.api.JsonToModel;
 import com.beastpotato.potato.compiler.generators.RequestModelGenerator;
 import com.beastpotato.potato.compiler.json.JsonCodeWriter;
@@ -48,12 +49,18 @@ public class JsonToModelPlugIn extends BasePlugIn {
             } else {
                 VariableElement variableElement = (VariableElement) annotatedElement;
                 JsonToModel annotation = variableElement.getAnnotation(JsonToModel.class);
+                Constants.ModelType type = annotation.modelType();
                 String jsonString = annotation.jsonString();
                 String responsePackageName = getElementUtils().getPackageOf(variableElement).toString() + "." + variableElement.getSimpleName().toString().toLowerCase();
                 String responseClassName = variableElement.getSimpleName().toString();
                 JsonCodeWriter codeWriter = new JsonCodeWriter(getFiler(), getLogger());
                 try {
-                    JCodeModel responseCodeModel = JsonParser.parseJsonToModel(responsePackageName, responseClassName, jsonString, getLogger());
+                    JCodeModel responseCodeModel;
+                    if (type == Constants.ModelType.GSON_AND_ORM_LITE_COMPAT) {
+                        responseCodeModel = JsonParser.parseJsonToOrmLiteModel(responsePackageName, responseClassName, jsonString, getLogger());
+                    } else {
+                        responseCodeModel = JsonParser.parseJsonToModel(responsePackageName, responseClassName, jsonString, getLogger());
+                    }
                     log(Diagnostic.Kind.NOTE, "Writing JSON Java model to file...");
                     responseCodeModel.build(codeWriter);
                     log(Diagnostic.Kind.NOTE, "Writing JSON Java model to file done.");

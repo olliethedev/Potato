@@ -8,5 +8,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.CLASS)
 public @interface JsonToModel {
+    Constants.ModelType modelType() default Constants.ModelType.GSON_COMPAT;
     String jsonString();
 }
